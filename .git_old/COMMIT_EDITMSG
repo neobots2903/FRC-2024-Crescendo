@@ -1,0 +1,43 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+#
+# Initial commit
+#
+# Changes to be committed:
+#	new file:   .gitignore
+#	new file:   .vscode/launch.json
+#	new file:   .vscode/settings.json
+#	new file:   .wpilib/wpilib_preferences.json
+#	new file:   LICENSE
+#	new file:   README.md
+#	new file:   WPILib-License.md
+#	new file:   build.gradle
+#	new file:   gradle/wrapper/gradle-wrapper.jar
+#	new file:   gradle/wrapper/gradle-wrapper.properties
+#	new file:   gradlew
+#	new file:   gradlew.bat
+#	new file:   settings.gradle
+#	new file:   src/main/deploy/example.txt
+#	new file:   src/main/deploy/swerve/controllerproperties.json
+#	new file:   src/main/deploy/swerve/modules/backleft.json
+#	new file:   src/main/deploy/swerve/modules/backright.json
+#	new file:   src/main/deploy/swerve/modules/frontleft.json
+#	new file:   src/main/deploy/swerve/modules/frontright.json
+#	new file:   src/main/deploy/swerve/modules/physicalproperties.json
+#	new file:   src/main/deploy/swerve/modules/pidfproperties.json
+#	new file:   src/main/deploy/swerve/swervedrive.json
+#	new file:   src/main/java/frc/robot/Constants.java
+#	new file:   src/main/java/frc/robot/Main.java
+#	new file:   src/main/java/frc/robot/Robot.java
+#	new file:   src/main/java/frc/robot/RobotContainer.java
+#	new file:   src/main/java/frc/robot/commands/drivebase/AbsoluteDriveAdv.java
+#	new file:   src/main/java/frc/robot/subsystems/SwerveSubsystem.java
+#	new file:   vendordeps/Phoenix6.json
+#	new file:   vendordeps/REVLib.json
+#	new file:   vendordeps/ReduxLib_2024.json
+#	new file:   vendordeps/WPILibNewCommands.json
+#	new file:   vendordeps/yagsl.json
+#
+Have a base swerve mostly moving.
