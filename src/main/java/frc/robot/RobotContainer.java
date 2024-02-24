@@ -11,10 +11,15 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.IntakeShooterConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.drivebase.AbsoluteDriveAdv;
+import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
+
 import java.io.File;
 
 /**
@@ -28,9 +33,11 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve"));
+  private final IntakeShooterSubsystem intakeShooter = new IntakeShooterSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+  final CommandXboxController operatorXbox = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -85,10 +92,16 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
+    // Driver bindings
     driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
     driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+
+    // Operator bindings
+    operatorXbox.y().whileTrue(Commands.runOnce(intakeShooter::startShooter)); 
+    // Make it a toggle. Spin to specific RPM and trigger intakeShooter
+
+    operatorXbox.a().whileTrue(Commands.runOnce(() -> intakeShooter.startIntake(IntakeDirection.IN)));
+    operatorXbox.b().whileTrue(Commands.runOnce(() -> intakeShooter.startIntake(IntakeDirection.OUT)));
   }
 
   public void setDriveMode()
