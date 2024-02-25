@@ -18,8 +18,11 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
-  public static final double ROBOT_MASS = 32 * 0.453592; // 32lbs * kg per pound, orig: (148 - 20.3) * 0.453592;
-  public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(0)), ROBOT_MASS); // orig: 8
+  public static final double LBS_TO_KG = 0.453592;
+  public static final double ROBOT_MASS = 40 * LBS_TO_KG; // 80lbs * kg per lb, orig: (148 - 20.3) * 0.453592;
+  public static final double INTAKE_MASS = 20 * LBS_TO_KG; // 20lbs * kg per lb
+  public static final Matter INTAKE = new Matter(new Translation3d(10, 2, Units.inchesToMeters(5)), INTAKE_MASS);
+  public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(0)), ROBOT_MASS); // orig: 8
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
 
   public static final class DrivebaseConstants

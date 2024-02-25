@@ -121,7 +121,7 @@ public class AbsoluteDriveAdv extends Command
     // Limit velocity to prevent tippy
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
     translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(),
-                                           Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS),
+                                           Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS, Constants.INTAKE),
                                            swerve.getSwerveDriveConfiguration());
     SmartDashboard.putNumber("LimitedTranslation", translation.getX());
     SmartDashboard.putString("Translation", translation.toString());
