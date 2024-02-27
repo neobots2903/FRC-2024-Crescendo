@@ -19,6 +19,7 @@ import frc.robot.commands.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
+import frc.robot.subsystems.ArmSubsystem;
 
 import java.io.File;
 
@@ -31,9 +32,11 @@ public class RobotContainer
 {
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+  private final SwerveSubsystem m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve"));
-  private final IntakeShooterSubsystem intakeShooter = new IntakeShooterSubsystem();
+  private final IntakeShooterSubsystem m_intakeShooter = new IntakeShooterSubsystem();
+
+  private final ArmSubsystem m_arm = new ArmSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
@@ -47,40 +50,17 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
 
-    AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                                OperatorConstants.LEFT_Y_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                                OperatorConstants.LEFT_X_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
-                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
-                                                                   driverXbox.getHID()::getYButtonPressed,
-                                                                   driverXbox.getHID()::getAButtonPressed,
-                                                                   driverXbox.getHID()::getXButtonPressed,
-                                                                   driverXbox.getHID()::getBButtonPressed);
-
-    // Applies deadbands and inverts controls because joysticks
-    // are back-right positive while robot
-    // controls are front-left positive
-    // left stick controls translation
-    // right stick controls the desired angle NOT angular rotation
-    // Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
-    //     () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-    //     () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-    //     () -> -driverXbox.getRightX(),
-    //     () -> -driverXbox.getRightY());
-
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
     // controls are front-left positive
     // left stick controls translation
     // right stick controls the angular velocity of the robot
-    Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
+    Command driveFieldOrientedAnglularVelocity = m_drivebase.driveCommand(
         () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> -driverXbox.getRightX());
 
-    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    m_drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
   }
 
   /**
@@ -92,16 +72,73 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    // Driver bindings
-    driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    // DRIVER bindings
+    driverXbox.a().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
+    driverXbox.x().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
 
-    // Operator bindings
-    operatorXbox.y().whileTrue(Commands.runOnce(intakeShooter::startShooter)); 
-    // Make it a toggle. Spin to specific RPM and trigger intakeShooter
+    // Drive at half speed when the bumper is held
+    driverXbox
+        .rightBumper()
+        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = 0.5))
+        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = 1.0));
 
-    operatorXbox.a().whileTrue(Commands.runOnce(() -> intakeShooter.startIntake(IntakeDirection.IN)));
-    operatorXbox.b().whileTrue(Commands.runOnce(() -> intakeShooter.startIntake(IntakeDirection.OUT)));
+    // --------------------------------------------------
+
+    // OPERATOR bindings
+    // operatorXbox.y().whileTrue(Commands.runOnce(m_intakeShooter::startShooter)); 
+
+    // When Y is pressed, spin the shooter to 5000 rpm and then start the intake.
+    operatorXbox.y().onTrue(
+      Commands.runOnce(
+          () -> {
+            m_intakeShooter.startShooter(IntakeShooterConstants.kShooterSpeed);
+            while (m_intakeShooter.getShooterSpeed() < IntakeShooterConstants.kShooterRPM)
+            {
+              // Wait until shooter is at 5000 rpm.
+              // Wait (BAD, fix later)
+            }
+            m_intakeShooter.startIntake(IntakeDirection.IN, IntakeShooterConstants.kIntakeShootSpeed);
+            
+            // Stop everything
+            m_intakeShooter.stopShooter();
+            m_intakeShooter.stopIntake();
+          },
+          m_intakeShooter));
+
+
+    // Intake in with X and out with B.
+    operatorXbox.x().whileTrue(Commands.runOnce(() -> m_intakeShooter.startIntake(IntakeDirection.IN)));
+    operatorXbox.b().whileTrue(Commands.runOnce(() -> m_intakeShooter.startIntake(IntakeDirection.OUT)));
+
+    // Disable the arm controller when Left is pressed.
+    operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));
+
+    // Arm Intake position when Down is pressed.
+    operatorXbox.povDown().onTrue(
+      Commands.runOnce(
+          () -> {
+            m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
+            m_arm.enable();
+          },
+          m_arm));
+
+    // Arm Amp position when Right is pressed.
+    operatorXbox.povRight().onTrue(
+      Commands.runOnce(
+          () -> {
+            m_arm.setGoal(Constants.ArmConstants.kArmAmpPosition);
+            m_arm.enable();
+          },
+          m_arm));
+
+    // Arm Speaker position when Up is pressed.
+    operatorXbox.povUp().onTrue(
+      Commands.runOnce(
+          () -> {
+            m_arm.setGoal(Constants.ArmConstants.kArmSpeakerPosition);
+            m_arm.enable();
+          },
+          m_arm));
   }
 
   public void setDriveMode()
@@ -111,6 +148,6 @@ public class RobotContainer
 
   public void setMotorBrake(boolean brake)
   {
-    drivebase.setMotorBrake(brake);
+    m_drivebase.setMotorBrake(brake);
   }
 }

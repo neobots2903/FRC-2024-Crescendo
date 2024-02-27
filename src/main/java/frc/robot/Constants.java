@@ -49,9 +49,39 @@ public final class Constants
   {
     public static final int kShooterMotorPort = 1; // TBD
     public static final double kShooterSpeed  = 0.75;
+    public static final int kShooterRPM = 5000;
 
     public static final int kIntakeMotorPort     = 5; // TBD
     public static final double kIntakeSpeed      = 0.85;
     public static final double kIntakeShootSpeed = 1;
+  }
+
+  public static class ArmConstants
+  {
+    public static final int kArmMotorPort = 4;
+
+    public static final double kArmP = 1;
+
+    // These are fake gains; in actuality these must be determined individually for each robot
+    public static final double kSArmVolts = 1;
+    public static final double kGArmVolts = 1;
+    public static final double kVArmVoltSecondPerRad = 0.5;
+    public static final double kAArmVoltSecondSquaredPerRad = 0.1;
+
+    public static final double kArmMaxVelocityRadPerSecond = 3;
+    public static final double kArmMaxAccelerationRadPerSecSquared = 10;
+
+    public static final int[] kArmEncoderPorts = new int[] {4, 5};
+    public static final int kArmEncoderPPR = 256;
+    public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / kArmEncoderPPR;
+
+    // The offset of the arm from the horizontal in its neutral position,
+    // measured from the horizontal
+    public static final double kArmOffsetRads = 0.5;
+
+    // NEED TO FIND REAL NUMBERS!!! (Radians?)
+    public static final double kArmIntakePosition = kArmOffsetRads;
+    public static final double kArmAmpPosition = 2;
+    public static final double kArmSpeakerPosition = 4;
   }
 }

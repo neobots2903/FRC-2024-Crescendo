@@ -62,6 +62,10 @@ public class IntakeShooterSubsystem extends SubsystemBase {
     m_intake.set(0);
   }
 
+  public double getShooterSpeed() {
+    return m_shooter.getEncoder().getVelocity();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
