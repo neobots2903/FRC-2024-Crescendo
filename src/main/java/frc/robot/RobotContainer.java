@@ -72,21 +72,18 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    // DRIVER bindings
+    // ---------- DRIVER bindings -----------------------
     driverXbox.a().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
     driverXbox.x().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
 
     // Drive at half speed when the bumper is held
     driverXbox
-        .rightBumper()
+        .leftBumper()
         .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = 0.5))
         .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = 1.0));
-
     // --------------------------------------------------
 
-    // OPERATOR bindings
-    // operatorXbox.y().whileTrue(Commands.runOnce(m_intakeShooter::startShooter)); 
-
+    // --------- OPERATOR bindings ----------------------
     // When Y is pressed, spin the shooter to 5000 rpm and then start the intake.
     operatorXbox.y().onTrue(
       Commands.runOnce(
@@ -117,8 +114,14 @@ public class RobotContainer
     operatorXbox.povDown().onTrue(
       Commands.runOnce(
           () -> {
-            m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
-            m_arm.enable();
+            // If the arm is extended, set the goal to the intake position, don't kill swerve.
+            if (m_arm.isExtended()) {
+              m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
+              m_arm.enable();
+            } else {
+              m_arm.setGoal(Constants.ArmConstants.kArmOffsetRads);
+              m_arm.enable();
+            }
           },
           m_arm));
 
@@ -139,6 +142,7 @@ public class RobotContainer
             m_arm.enable();
           },
           m_arm));
+    // --------------------------------------------------
   }
 
   public void setDriveMode()

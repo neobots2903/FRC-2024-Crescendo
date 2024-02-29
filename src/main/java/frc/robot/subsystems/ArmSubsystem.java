@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 
 import frc.robot.Constants.ArmConstants;
  
-
 /*
  * complete arm ratio is 75:1 
  * encoder ratio 5:1
@@ -24,13 +23,15 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
           ArmConstants.kSArmVolts, ArmConstants.kGArmVolts,
           ArmConstants.kVArmVoltSecondPerRad, ArmConstants.kAArmVoltSecondSquaredPerRad);
 
+  private Boolean is_extended = false;
+
   /** Create a new ArmSubsystem. */
   public ArmSubsystem() {
     super(
         new ProfiledPIDController(
             ArmConstants.kArmP,
-            0,
-            0,
+            ArmConstants.kArmI,
+            ArmConstants.kArmD,
             new TrapezoidProfile.Constraints(
                 ArmConstants.kArmMaxVelocityRadPerSecond,
                 ArmConstants.kArmMaxAccelerationRadPerSecSquared)),
@@ -46,6 +47,10 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
     // Add the feedforward to the PID output to get the motor output
     m_motor.setVoltage(output + feedforward);
+  }
+
+  public Boolean isExtended() {
+    return is_extended;
   }
 
   @Override

@@ -60,13 +60,16 @@ public final class Constants
   {
     public static final int kArmMotorPort = 4;
 
-    public static final double kArmP = 1;
+    // Double check these first!
+    public static final double kArmP = 6;
+    public static final double kArmI = 0.5;
+    public static final double kArmD = 0.75;
 
-    // These are fake gains; in actuality these must be determined individually for each robot
-    public static final double kSArmVolts = 1;
-    public static final double kGArmVolts = 1;
-    public static final double kVArmVoltSecondPerRad = 0.5;
-    public static final double kAArmVoltSecondSquaredPerRad = 0.1;
+    // STarting with estimated values from calculator
+    public static final double kSArmVolts = 1; // ???
+    public static final double kGArmVolts = 0.72;
+    public static final double kVArmVoltSecondPerRad = 5.85;
+    public static final double kAArmVoltSecondSquaredPerRad = 0.11;
 
     public static final double kArmMaxVelocityRadPerSecond = 3;
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
@@ -77,11 +80,11 @@ public final class Constants
 
     // The offset of the arm from the horizontal in its neutral position,
     // measured from the horizontal
-    public static final double kArmOffsetRads = 0.5;
+    public static final double kArmOffsetRads = 5;
 
     // NEED TO FIND REAL NUMBERS!!! (Radians?)
     public static final double kArmIntakePosition = kArmOffsetRads;
-    public static final double kArmAmpPosition = 2;
-    public static final double kArmSpeakerPosition = 4;
+    public static final double kArmAmpPosition = 40;
+    public static final double kArmSpeakerPosition = 90;
   }
 }
