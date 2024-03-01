@@ -145,11 +145,6 @@ public class RobotContainer
     // --------------------------------------------------
   }
 
-  public void setDriveMode()
-  {
-    //drivebase.setDefaultCommand();
-  }
-
   public void setMotorBrake(boolean brake)
   {
     m_drivebase.setMotorBrake(brake);
