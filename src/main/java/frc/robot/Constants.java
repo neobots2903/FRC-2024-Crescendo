@@ -45,25 +45,27 @@ public final class Constants
 
   public static class IntakeShooterConstants
   {
-    public static final int kShooterMotorPort = 1; // TBD
+    public static final int kShooterMotorPort = 10;
     public static final double kShooterSpeed  = 0.75;
     public static final int kShooterRPM = 5000;
 
-    public static final int kIntakeMotorPort     = 5; // TBD
+    public static final int kIntakeMotorPort     = 11;
     public static final double kIntakeSpeed      = 0.85;
     public static final double kIntakeShootSpeed = 1;
   }
 
   public static class ArmConstants
   {
-    public static final int kArmMotorPort = 4;
+    public static final int kArmMotorPort = 12;
+
+    public static final int kArmStopLimitPort = 0;
 
     // Double check these first!
     public static final double kArmP = 6;
     public static final double kArmI = 0.5;
     public static final double kArmD = 0.75;
 
-    // STarting with estimated values from calculator
+    // Starting with estimated values from calculator
     public static final double kSArmVolts = 1; // ???
     public static final double kGArmVolts = 0.72;
     public static final double kVArmVoltSecondPerRad = 5.85;
@@ -72,7 +74,7 @@ public final class Constants
     public static final double kArmMaxVelocityRadPerSecond = 3;
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
 
-    public static final int[] kArmEncoderPorts = new int[] {4, 5};
+    public static final int kArmEncoderPort = 1;
     public static final int kArmEncoderPPR = 256;
     public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / kArmEncoderPPR;
 
