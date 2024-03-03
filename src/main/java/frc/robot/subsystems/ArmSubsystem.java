@@ -30,9 +30,9 @@ public class ArmSubsystem extends SubsystemBase {
   private final CANSparkMax m_motor = new CANSparkMax(ArmConstants.kArmMotorPort, MotorType.kBrushless);
   private final CANSparkMax M_extendMotor = new CANSparkMax(ArmConstants.kArmExtendMotorPort, MotorType.kBrushless);
   private final RelativeEncoder m_extendEncoder;
-  private final RelativeEncoder m_encoder;
+  private final RelativeEncoder m_armEncoder;
   private final SparkPIDController m_extendPid, m_armPid;
-  public double kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc;
+  public double kMaxOutput, kMinOutput, maxRPM, maxVel, maxAcc;
 
   // private final DutyCycleEncoder m_encoder =
   //     new DutyCycleEncoder(ArmConstants.kArmEncoderPort);
@@ -53,10 +53,10 @@ public class ArmSubsystem extends SubsystemBase {
     m_extendEncoder = M_extendMotor.getEncoder();
     m_extendPid = M_extendMotor.getPIDController();
 
-    m_encoder = m_motor.getEncoder();
+    m_armEncoder = m_motor.getEncoder();
     m_armPid = m_motor.getPIDController();
 
-    // m_encoder.setPositionConversionFactor(300);
+    // m_armEncoder.setPositionConversionFactor(300);
 
     // m_encoder.reset();
 
@@ -68,29 +68,20 @@ public class ArmSubsystem extends SubsystemBase {
     m_armPid.setP(ArmConstants.kArmP);
     m_armPid.setI(ArmConstants.kArmI);
     m_armPid.setD(ArmConstants.kArmD);
-    m_armPid.setOutputRange(ArmConstants.kArmMaxVelocityRadPerSecond, ArmConstants.kArmMaxAccelerationRadPerSecSquared);
+    m_armPid.setOutputRange(-0.5, 0.5);
 
     // Smart Motion Coefficients
-    maxVel = 2000; // rpm
-    maxAcc = 1500;
+    maxVel = 3000; // rpm
+    maxAcc = 2000;
+
+    int smartMotionSlot = 0;
+    m_armPid.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+    m_armPid.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
   }
-
-  // @Override
-  // public void useOutput(double output, TrapezoidProfile.State setpoint) {
-  //   if (!m_stopLimit.get()) {
-  //     // If the arm is at the limit, stop the motor
-  //     m_motor.setVoltage(0);
-  //   }
-
-  //   // Calculate the feedforward from the sepoint
-  //   double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-  //   // Add the feedforward to the PID output to get the motor output
-  //   m_motor.setVoltage(output + feedforward);
-  // }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Arm Position", m_encoder.getPosition());
+    SmartDashboard.putNumber("Arm Position", m_armEncoder.getPosition());
     SmartDashboard.putNumber("Arm Target", m_armPid.getOutputMax());
     SmartDashboard.putBoolean("Arm Limit", !m_stopLimit.get());
 
