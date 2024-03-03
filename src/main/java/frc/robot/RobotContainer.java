@@ -38,7 +38,7 @@ public class RobotContainer
   private final IntakeShooterSubsystem m_intakeShooter = new IntakeShooterSubsystem();
 
   private final ArmSubsystem m_arm = new ArmSubsystem();
-  private final ArmSubsystemSimple m_armSimple = new ArmSubsystemSimple();
+  // private final ArmSubsystemSimple m_armSimple = new ArmSubsystemSimple();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
@@ -141,20 +141,20 @@ public class RobotContainer
           },
           m_arm));
 
-    // ADDED CODE FOR JUST P LOOP TESTING
-    operatorXbox.rightBumper().onTrue(
-      Commands.runOnce(
-          () -> {
-            m_armSimple.goToPosition(ArmConstants.kArmSpeakerPosition);
-          },
-          m_arm));
+    // // ADDED CODE FOR JUST P LOOP TESTING
+    // operatorXbox.rightBumper().onTrue(
+    //   Commands.runOnce(
+    //       () -> {
+    //         m_armSimple.goToPosition(ArmConstants.kArmSpeakerPosition);
+    //       },
+    //       m_armSimple));
 
-    operatorXbox.leftBumper().onTrue(
-      Commands.runOnce(
-          () -> {
-            m_armSimple.disableArm();
-          },
-          m_arm));
+    // operatorXbox.leftBumper().onTrue(
+    //   Commands.runOnce(
+    //       () -> {
+    //         m_armSimple.disableArm();
+    //       },
+    //       m_armSimple));
     // --------------------------------------------------
   }
 

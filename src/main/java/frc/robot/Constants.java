@@ -75,7 +75,7 @@ public final class Constants
     public static final double kArmExtendD = 0;
 
     // Starting with estimated values from calculator
-    public static final double kSArmVolts = 1.1; // Needs to be measured
+    public static final double kSArmVolts = 0.8; // Needs to be measured
     public static final double kGArmVolts = 0.72;
     public static final double kVArmVoltSecondPerRad = 5.85;
     public static final double kAArmVoltSecondSquaredPerRad = 0.11;
@@ -87,7 +87,7 @@ public final class Constants
 
     // Is this supposed to be before or after the encoder?
     // 300:1 before encoder, 5:1 after encoder
-    public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / 5;
+    public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / 300;
 
     // The offset of the arm from the horizontal in its neutral position,
     // measured from the horizontal

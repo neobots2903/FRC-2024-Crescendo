@@ -45,13 +45,15 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     m_armEncoder = new DutyCycleEncoder(ArmConstants.kArmEncoderPort);
     m_armStopLimit = new DigitalInput(ArmConstants.kArmStopLimitPort);
 
+    m_armEncoder.reset();
+
     m_feedForward = new ArmFeedforward(ArmConstants.kSArmVolts, ArmConstants.kGArmVolts,
         ArmConstants.kVArmVoltSecondPerRad, ArmConstants.kAArmVoltSecondSquaredPerRad);
 
     m_armEncoder.setDistancePerRotation(ArmConstants.kArmEncoderDistancePerPulse);
 
     // Start arm at rest in neutral position
-    setGoal(ArmConstants.kArmOffsetRads);
+    // setGoal(ArmConstants.kArmOffsetRads);
   }
 
   @Override
@@ -59,17 +61,12 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     // Calculate the feedforward from the sepoint
     double feedforward = m_feedForward.calculate(setpoint.position, setpoint.velocity);
 
-    // Add the feedforward to the PID output to get the motor output
-    if (output == 0) {
-      feedforward = 0;
-    }
     m_armMotor.setVoltage(output + feedforward);
 
     // Right place for this???
     // Should be more robust to stop from getting stuck
     if (getLimitSwitch()) {
       m_armMotor.stopMotor();
-      is_extended = true;
       return;
     }
   }

@@ -33,7 +33,7 @@ public class ArmSubsystemSimple extends SubsystemBase {
     m_armEncoder = new DutyCycleEncoder(ArmConstants.kArmEncoderPort);
     m_armStopLimit = new DigitalInput(ArmConstants.kArmStopLimitPort);
 
-    m_pidController = new PIDController(ArmConstants.kArmP, ArmConstants.kArmI, ArmConstants.kArmD);
+    m_pidController = new PIDController(0.01, 0, 0);
 
     m_armEncoder.setDistancePerRotation(ArmConstants.kArmEncoderDistancePerPulse);
   }
@@ -51,8 +51,8 @@ public class ArmSubsystemSimple extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Arm Angle", m_armEncoder.getAbsolutePosition());
-    SmartDashboard.putNumber("Arm Velocity", m_armEncoder.getFrequency());
+    SmartDashboard.putNumber("Arm Abs Pos", m_armEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("Arm Velocity Hz", m_armEncoder.getFrequency());
     SmartDashboard.putBoolean("Arm Extended", is_extended);
     SmartDashboard.putBoolean("Arm Limit", getLimitSwitch());
 
