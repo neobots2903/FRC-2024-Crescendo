@@ -13,14 +13,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakeShooterConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ArmTestSubsystem;
-import frc.robot.subsystems.ArmTestSubsystem.ArmPosition;
 
 import java.io.File;
 
@@ -37,7 +36,7 @@ public class RobotContainer
                                                                          "swerve"));
   private final IntakeShooterSubsystem m_intakeShooter = new IntakeShooterSubsystem();
 
-  private final ArmTestSubsystem m_arm = new ArmTestSubsystem();
+  private final ArmSubsystem m_arm = new ArmSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
@@ -98,9 +97,12 @@ public class RobotContainer
     // operatorXbox.rightBumper().onTrue(new InstantCommand(() -> m_arm.extendArm()));
     // operatorXbox.leftBumper().onTrue(new InstantCommand(() -> m_arm.retractArm()));
 
-    // Change arm position based on d-pad direction
-    operatorXbox.povUp().onTrue(m_arm.setArmPosition(ArmPosition.Amp));
-    operatorXbox.povRight().onTrue(m_arm.setArmPosition(ArmPosition.Speaker));
+    // // Change arm position based on d-pad direction
+    // operatorXbox.povUp().onTrue(m_arm.setArmPosition(ArmPosition.Amp));
+    // operatorXbox.povRight().onTrue(m_arm.setArmPosition(ArmPosition.Speaker));
+
+    operatorXbox.povUp().onTrue(new InstantCommand(() -> m_arm.setArmPosition(ArmConstants.kArmAmpPosition)));
+    operatorXbox.povDown().onTrue(new InstantCommand(() -> m_arm.setArmPosition(ArmConstants.kArmSpeakerPosition)));
 
     // // Disable the arm controller when Left is pressed.
     // operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));

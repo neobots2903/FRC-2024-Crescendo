@@ -69,7 +69,7 @@ public final class Constants
     // public static final double kArmP = 6;
     // public static final double kArmI = 0.5;
     // public static final double kArmD = 0.75;
-    public static final double kArmP = 1;
+    public static final double kArmP = 0.01;
     public static final double kArmI = 0;
     public static final double kArmD = 0;
 
@@ -102,6 +102,6 @@ public final class Constants
     public static final double kArmRestingPosition = 38;
     public static final double kArmIntakePosition = 30;
     public static final double kArmSpeakerPosition = 55;
-    public static final double kArmAmpPosition = 80;
+    public static final double kArmAmpPosition = 0.75;
   }
 }
