@@ -102,44 +102,44 @@ public class RobotContainer
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopIntake()));
 
     // Arm extension, right up, left down.
-    // operatorXbox.rightBumper().onTrue(new InstantCommand(() -> m_arm.extendArm()));
+    operatorXbox.rightBumper().onTrue(new InstantCommand(() -> m_arm.extendArm()));
     // operatorXbox.leftBumper().onTrue(new InstantCommand(() -> m_arm.retractArm()));
 
-    // Disable the arm controller when Left is pressed.
-    operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));
+    // // Disable the arm controller when Left is pressed.
+    // operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));
 
-    // Arm Intake position when Down is pressed.
-    operatorXbox.povDown().onTrue(
-      Commands.runOnce(
-          () -> {
-            // If the arm is extended, set the goal to the intake position, don't kill swerve.
-            if (m_arm.isExtended()) {
-              m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
-              m_arm.enable();
-            } else {
-              m_arm.setGoal(Constants.ArmConstants.kArmRestingPosition);
-              m_arm.enable();
-            }
-          },
-          m_arm));
+    // // Arm Intake position when Down is pressed.
+    // operatorXbox.povDown().onTrue(
+    //   Commands.runOnce(
+    //       () -> {
+    //         // If the arm is extended, set the goal to the intake position, don't kill swerve.
+    //         if (m_arm.isExtended()) {
+    //           m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
+    //           m_arm.enable();
+    //         } else {
+    //           m_arm.setGoal(Constants.ArmConstants.kArmRestingPosition);
+    //           m_arm.enable();
+    //         }
+    //       },
+    //       m_arm));
 
-    // Arm Speaker position when Right is pressed.
-    operatorXbox.povRight().onTrue(
-      Commands.runOnce(
-          () -> {
-            m_arm.setGoal(Constants.ArmConstants.kArmAmpPosition);
-            m_arm.enable();
-          },
-          m_arm));
+    // // Arm Speaker position when Right is pressed.
+    // operatorXbox.povRight().onTrue(
+    //   Commands.runOnce(
+    //       () -> {
+    //         m_arm.setGoal(Constants.ArmConstants.kArmAmpPosition);
+    //         m_arm.enable();
+    //       },
+    //       m_arm));
 
-    // Arm Amp position when Up is pressed.
-    operatorXbox.povUp().onTrue(
-      Commands.runOnce(
-          () -> {
-            m_arm.setGoal(Constants.ArmConstants.kArmSpeakerPosition);
-            m_arm.enable();
-          },
-          m_arm));
+    // // Arm Amp position when Up is pressed.
+    // operatorXbox.povUp().onTrue(
+    //   Commands.runOnce(
+    //       () -> {
+    //         m_arm.setGoal(Constants.ArmConstants.kArmSpeakerPosition);
+    //         m_arm.enable();
+    //       },
+    //       m_arm));
 
     // // ADDED CODE FOR JUST P LOOP TESTING
     // operatorXbox.rightBumper().onTrue(

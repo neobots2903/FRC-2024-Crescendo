@@ -1,11 +1,14 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,6 +24,10 @@ import frc.robot.Constants.ArmConstants;
 public class ArmSubsystem extends ProfiledPIDSubsystem {
   private final CANSparkMax m_armMotor;
   private final DutyCycleEncoder m_armEncoder;
+
+  private final CANSparkMax m_armExtendMotor;
+  private final RelativeEncoder m_armExtendEncoder;
+  private final SparkPIDController m_extendPid;
 
   // Normally open limit switch
   private final DigitalInput m_armStopLimit;
@@ -45,7 +52,9 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     m_armEncoder = new DutyCycleEncoder(ArmConstants.kArmEncoderPort);
     m_armStopLimit = new DigitalInput(ArmConstants.kArmStopLimitPort);
 
-    m_armEncoder.reset();
+    m_armExtendMotor = new CANSparkMax(ArmConstants.kArmExtendMotorPort, MotorType.kBrushless);
+    m_armExtendEncoder = m_armExtendMotor.getEncoder();
+    m_extendPid = m_armExtendMotor.getPIDController();
 
     m_feedForward = new ArmFeedforward(ArmConstants.kSArmVolts, ArmConstants.kGArmVolts,
         ArmConstants.kVArmVoltSecondPerRad, ArmConstants.kAArmVoltSecondSquaredPerRad);
@@ -61,7 +70,8 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     // Calculate the feedforward from the sepoint
     double feedforward = m_feedForward.calculate(setpoint.position, setpoint.velocity);
 
-    m_armMotor.setVoltage(output + feedforward);
+    // m_armMotor.setVoltage(output + feedforward);
+    m_armMotor.setVoltage(0);
 
     // Right place for this???
     // Should be more robust to stop from getting stuck
@@ -87,6 +97,18 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
   public Boolean getLimitSwitch() {
     return !m_armStopLimit.get();
+  }
+
+  public void extendArm() {
+    // Run arm extension motor to 12 inches.
+    m_extendPid.setReference(ArmConstants.kArmExtendPos, CANSparkMax.ControlType.kPosition);
+    is_extended = true;
+  }
+
+  public void retractArm() {
+    // Run arm extension motor to 0 inches.
+    m_extendPid.setReference(ArmConstants.kArmRetractPos, CANSparkMax.ControlType.kPosition);
+    is_extended = false;
   }
 
   @Override

@@ -62,7 +62,7 @@ public final class Constants
     public static final int kArmStopLimitPort = 0;
 
     // Rotations???
-    public static final int kArmExtendPos = 36;
+    public static final int kArmExtendPos = 70;
     public static final int kArmRetractPos = 5;
 
     // Double check these first!
