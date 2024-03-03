@@ -77,7 +77,7 @@ public class Robot extends TimedRobot
   public void disabledInit()
   {
     m_robotContainer.setMotorBrake(true);
-    m_robotContainer.disablePIDSubsystems();
+    // m_robotContainer.disablePIDSubsystems();
     disabledTimer.reset();
     disabledTimer.start();
   }

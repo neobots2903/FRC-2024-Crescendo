@@ -66,9 +66,12 @@ public final class Constants
     public static final int kArmRetractPos = 5;
 
     // Double check these first!
-    public static final double kArmP = 6;
-    public static final double kArmI = 0.5;
-    public static final double kArmD = 0.75;
+    // public static final double kArmP = 6;
+    // public static final double kArmI = 0.5;
+    // public static final double kArmD = 0.75;
+    public static final double kArmP = 1;
+    public static final double kArmI = 0;
+    public static final double kArmD = 0;
 
     public static final double kArmExtendP = 0.05;
     public static final double kArmExtendI = 0;

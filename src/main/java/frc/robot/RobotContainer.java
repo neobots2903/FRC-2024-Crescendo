@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeShooterConstants;
 import frc.robot.Constants.OperatorConstants;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmTestSubsystem;
+import frc.robot.subsystems.ArmTestSubsystem.ArmPosition;
 
 import java.io.File;
 
@@ -92,56 +94,60 @@ public class RobotContainer
       operatorXbox.x().onTrue(new InstantCommand(() -> m_intakeShooter.startIntake(IntakeDirection.OUT, IntakeShooterConstants.kIntakeSpeed)))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopIntake()));
 
-    // Arm extension, right up, left down.
-    operatorXbox.rightBumper().onTrue(new InstantCommand(() -> m_arm.extendArm()));
-    operatorXbox.leftBumper().onTrue(new InstantCommand(() -> m_arm.retractArm()));
+    // // Arm extension, right up, left down.
+    // operatorXbox.rightBumper().onTrue(new InstantCommand(() -> m_arm.extendArm()));
+    // operatorXbox.leftBumper().onTrue(new InstantCommand(() -> m_arm.retractArm()));
 
-    // Disable the arm controller when Left is pressed.
-    operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));
+    // Change arm position based on d-pad direction
+    operatorXbox.povUp().onTrue(m_arm.setArmPosition(ArmPosition.Amp));
+    operatorXbox.povRight().onTrue(m_arm.setArmPosition(ArmPosition.Speaker));
 
-    // Arm Intake position when Down is pressed.
-    operatorXbox.povDown().onTrue(
-      Commands.runOnce(
-          () -> {
-            m_arm.disable();
-            // If the arm is extended, set the goal to the intake position, don't kill swerve.
-            if (m_arm.isExtended()) {
-              // m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
-              // m_arm.enable();
-              m_arm.setArmGoalCommand(Constants.ArmConstants.kArmIntakePosition);
-            } else {
-              // m_arm.setGoal(Constants.ArmConstants.kArmRestingPosition);
-              // m_arm.enable();
-              m_arm.setArmGoalCommand(Constants.ArmConstants.kArmRestingPosition);
-            }
-          },
-          m_arm));
+    // // Disable the arm controller when Left is pressed.
+    // operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));
 
-    // Arm Speaker position when Right is pressed.
-    operatorXbox.povRight().onTrue(
-      Commands.runOnce(
-          () -> {
-            m_arm.disable();
-            m_arm.setGoal(Constants.ArmConstants.kArmAmpPosition);
-            m_arm.enable();
-          },
-          m_arm));
+    // // Arm Intake position when Down is pressed.
+    // operatorXbox.povDown().onTrue(
+    //   Commands.runOnce(
+    //       () -> {
+    //         m_arm.disable();
+    //         // If the arm is extended, set the goal to the intake position, don't kill swerve.
+    //         if (m_arm.isExtended()) {
+    //           // m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
+    //           // m_arm.enable();
+    //           m_arm.setArmGoalCommand(Constants.ArmConstants.kArmIntakePosition);
+    //         } else {
+    //           // m_arm.setGoal(Constants.ArmConstants.kArmRestingPosition);
+    //           // m_arm.enable();
+    //           m_arm.setArmGoalCommand(Constants.ArmConstants.kArmRestingPosition);
+    //         }
+    //       },
+    //       m_arm));
 
-    // Arm Amp position when Up is pressed.
-    operatorXbox.povUp().onTrue(
-      Commands.runOnce(
-          () -> {
-            m_arm.disable();
-            m_arm.setGoal(Constants.ArmConstants.kArmSpeakerPosition);
-            m_arm.enable();
-          },
-          m_arm));
+    // // Arm Speaker position when Right is pressed.
+    // operatorXbox.povRight().onTrue(
+    //   Commands.runOnce(
+    //       () -> {
+    //         m_arm.disable();
+    //         m_arm.setGoal(Constants.ArmConstants.kArmAmpPosition);
+    //         m_arm.enable();
+    //       },
+    //       m_arm));
+
+    // // Arm Amp position when Up is pressed.
+    // operatorXbox.povUp().onTrue(
+    //   Commands.runOnce(
+    //       () -> {
+    //         m_arm.disable();
+    //         m_arm.setGoal(Constants.ArmConstants.kArmSpeakerPosition);
+    //         m_arm.enable();
+    //       },
+    //       m_arm));
     // --------------------------------------------------
   }
 
-  public void disablePIDSubsystems() {
-    m_arm.disable();
-  }
+  // public void disablePIDSubsystems() {
+  //   m_arm.disable();
+  // }
 
   public void setMotorBrake(boolean brake)
   {
