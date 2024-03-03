@@ -66,21 +66,16 @@ public final class Constants
     public static final int kArmRetractPos = 5;
 
     // Double check these first!
-    // public static final double kArmP = 6;
-    // public static final double kArmI = 0.5;
-    // public static final double kArmD = 0.75;
-    public static final double kArmP = 0.01;
-    public static final double kArmI = 0;
-    public static final double kArmD = 0;
+    public static final double kArmP = 6;
+    public static final double kArmI = 0.5;
+    public static final double kArmD = 0.75;
 
     public static final double kArmExtendP = 0.05;
     public static final double kArmExtendI = 0;
     public static final double kArmExtendD = 0;
-    public static final double kArmExtendMinOutput = -1;
-    public static final double kArmExtendMaxOutput = 1;
 
     // Starting with estimated values from calculator
-    public static final double kSArmVolts = 1.1; // 1 - 
+    public static final double kSArmVolts = 1.1; // Needs to be measured
     public static final double kGArmVolts = 0.72;
     public static final double kVArmVoltSecondPerRad = 5.85;
     public static final double kAArmVoltSecondSquaredPerRad = 0.11;
@@ -89,19 +84,19 @@ public final class Constants
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
 
     public static final int kArmEncoderPort = 1;
-    public static final int kArmEncoderPPR = 72; // 72 or 256  (65536)
-    public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / kArmEncoderPPR;
 
-    // public static final double convertRadians = Math.PI/180;
+    // Is this supposed to be before or after the encoder?
+    // 300:1 before encoder, 5:1 after encoder
+    public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / 5;
 
     // The offset of the arm from the horizontal in its neutral position,
     // measured from the horizontal
-    public static final double kArmOffsetRads = 1; // -39
+    public static final double kArmOffsetRads = 1;
 
-    // NEED TO FIND REAL NUMBERS!!! (Degrees?)
+    // NEED TO FIND REAL NUMBERS!!! (Radians?)
     public static final double kArmRestingPosition = 38;
     public static final double kArmIntakePosition = 30;
-    public static final double kArmSpeakerPosition = 55;
-    public static final double kArmAmpPosition = 10 / 300;
+    public static final double kArmSpeakerPosition = 50;
+    public static final double kArmAmpPosition = 85;
   }
 }
