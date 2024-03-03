@@ -102,6 +102,6 @@ public final class Constants
     public static final double kArmRestingPosition = 38;
     public static final double kArmIntakePosition = 30;
     public static final double kArmSpeakerPosition = 55;
-    public static final double kArmAmpPosition = 0.75;
+    public static final double kArmAmpPosition = 10 / 300;
   }
 }

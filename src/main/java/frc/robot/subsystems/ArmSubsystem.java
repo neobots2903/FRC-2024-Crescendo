@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkRelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.Constants.ArmConstants;
@@ -29,10 +30,12 @@ public class ArmSubsystem extends SubsystemBase {
   private final CANSparkMax m_motor = new CANSparkMax(ArmConstants.kArmMotorPort, MotorType.kBrushless);
   private final CANSparkMax M_extendMotor = new CANSparkMax(ArmConstants.kArmExtendMotorPort, MotorType.kBrushless);
   private final RelativeEncoder m_extendEncoder;
+  private final RelativeEncoder m_encoder;
   private final SparkPIDController m_extendPid, m_armPid;
+  public double kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc;
 
-  private final DutyCycleEncoder m_encoder =
-      new DutyCycleEncoder(ArmConstants.kArmEncoderPort);
+  // private final DutyCycleEncoder m_encoder =
+  //     new DutyCycleEncoder(ArmConstants.kArmEncoderPort);
 
   // private final ArmFeedforward m_feedforward =
   //     new ArmFeedforward(
@@ -45,12 +48,15 @@ public class ArmSubsystem extends SubsystemBase {
   /** Create a new ArmSubsystem. */
   public ArmSubsystem() {
     // m_encoder.setDistancePerPulse(ArmConstants.kArmEncoderDistancePerPulse);
-    m_encoder.setDistancePerRotation(ArmConstants.kArmEncoderDistancePerPulse);
+    // m_encoder.setDistancePerRotation(ArmConstants.kArmEncoderDistancePerPulse);
 
     m_extendEncoder = M_extendMotor.getEncoder();
     m_extendPid = M_extendMotor.getPIDController();
 
+    m_encoder = m_motor.getEncoder();
     m_armPid = m_motor.getPIDController();
+
+    // m_encoder.setPositionConversionFactor(300);
 
     // m_encoder.reset();
 
@@ -63,6 +69,10 @@ public class ArmSubsystem extends SubsystemBase {
     m_armPid.setI(ArmConstants.kArmI);
     m_armPid.setD(ArmConstants.kArmD);
     m_armPid.setOutputRange(ArmConstants.kArmMaxVelocityRadPerSecond, ArmConstants.kArmMaxAccelerationRadPerSecSquared);
+
+    // Smart Motion Coefficients
+    maxVel = 2000; // rpm
+    maxAcc = 1500;
   }
 
   // @Override
@@ -80,7 +90,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Arm Position", m_encoder.getAbsolutePosition());
+    SmartDashboard.putNumber("Arm Position", m_encoder.getPosition());
     SmartDashboard.putNumber("Arm Target", m_armPid.getOutputMax());
     SmartDashboard.putBoolean("Arm Limit", !m_stopLimit.get());
 
@@ -95,7 +105,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void setArmPosition(double degrees) {
-    m_armPid.setReference(degrees, CANSparkMax.ControlType.kPosition);
+    m_armPid.setReference(degrees, CANSparkMax.ControlType.kSmartMotion);
   }
 
   public void extendArm() {
