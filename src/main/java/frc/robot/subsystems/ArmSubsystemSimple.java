@@ -37,6 +37,8 @@ public class ArmSubsystemSimple extends SubsystemBase {
   // private final ArmFeedforward m_feedForward;
 
   private Boolean is_extended = false;
+  private Boolean lastSwitchState = false;
+  private double currentTarget = 0;
 
   /** Create a new ArmSubsystem. */
   public ArmSubsystemSimple() {
@@ -45,10 +47,12 @@ public class ArmSubsystemSimple extends SubsystemBase {
     m_armEncoder = m_armMotor.getEncoder();
     m_armStopLimit = new DigitalInput(ArmConstants.kArmStopLimitPort);
     m_armPid = m_armMotor.getPIDController();
+    m_armEncoder.setPosition(0);
 
     m_armExtendMotor = new CANSparkMax(ArmConstants.kArmExtendMotorPort, MotorType.kBrushless);
     m_armExtendEncoder = m_armExtendMotor.getEncoder();
     m_extendPid = m_armExtendMotor.getPIDController();
+    m_armExtendEncoder.setPosition(0);
 
     // Set pid coefficients
     m_armPid.setP(ArmConstants.kArmP);
@@ -59,6 +63,7 @@ public class ArmSubsystemSimple extends SubsystemBase {
     m_extendPid.setP(ArmConstants.kArmExtendP);
     m_extendPid.setI(ArmConstants.kArmExtendI);
     m_extendPid.setD(ArmConstants.kArmExtendD);
+    m_extendPid.setOutputRange(ArmConstants.kArmExtendMinOutput, ArmConstants.kArmExtendMaxOutput);
 
     // m_feedForward = new ArmFeedforward(ArmConstants.kSArmVolts, ArmConstants.kGArmVolts,
     //     ArmConstants.kVArmVoltSecondPerRad, ArmConstants.kAArmVoltSecondSquaredPerRad);
@@ -71,21 +76,45 @@ public class ArmSubsystemSimple extends SubsystemBase {
     SmartDashboard.putBoolean("Arm Extended", is_extended);
     SmartDashboard.putBoolean("Arm Limit", getLimitSwitch());
     SmartDashboard.putNumber("Arm Amps", m_armMotor.getOutputCurrent());
+    
+    SmartDashboard.putNumber("Arm Ext Amps", m_armExtendMotor.getOutputCurrent());
+    SmartDashboard.putBoolean("Above Bumpers", isArmAboveBumpers());
 
+    // Allow it to go down because the switch limits up only.
     if (getLimitSwitch()) {
+      if (lastSwitchState) {
+        return;
+      }
       m_armMotor.stopMotor();
+      m_armPid.setOutputRange(ArmConstants.kArmExtendMinOutput, 0);
+      lastSwitchState = true;
       return;
+    } else {
+      if (!lastSwitchState) {
+        return;
+      }
+      m_armPid.setOutputRange(ArmConstants.kArmMinOutput, ArmConstants.kArmMaxOutput);
+      lastSwitchState = false;
     }
   }
 
   public void goToPosition(double position) {
-    SmartDashboard.putNumber("Arm Target", position);
-    SmartDashboard.putNumber("Arm Target Converted", position * ArmConstants.kArmConversionFactor);
-    m_armPid.setReference(position, CANSparkMax.ControlType.kPosition);
+    currentTarget = position;
+    SmartDashboard.putNumber("Arm Target", currentTarget);
+    SmartDashboard.putNumber("Arm Target Converted", currentTarget * ArmConstants.kArmConversionFactor);
+    m_armPid.setReference(currentTarget, CANSparkMax.ControlType.kPosition);
   }
 
   public Boolean isExtended() {
-    return is_extended;
+    return is_extended && m_armEncoder.getPosition() >= 5;
+  }
+
+  public Boolean isRetracted() {
+    return !is_extended && m_armEncoder.getPosition() <= 5;
+  }
+
+  public Boolean isArmAboveBumpers() {
+    return m_armEncoder.getPosition() >= ArmConstants.kArmBumperPos;
   }
 
   public Boolean getLimitSwitch() {

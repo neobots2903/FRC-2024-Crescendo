@@ -63,7 +63,7 @@ public final class Constants
 
     // Rotations???
     public static final int kArmExtendPos = 70;
-    public static final int kArmRetractPos = 5;
+    public static final int kArmRetractPos = 0;
 
     // Double check these first!
     // public static final double kArmP = 6;
@@ -73,11 +73,13 @@ public final class Constants
     public static final double kArmI = 0;
     public static final double kArmD = 0;
     public static final double kArmMaxOutput = 0.5;
-    public static final double kArmMinOutput = -0.5;
+    public static final double kArmMinOutput = -0.1;
 
-    public static final double kArmExtendP = 0.005;
+    public static final double kArmExtendP = 0.01;
     public static final double kArmExtendI = 0;
     public static final double kArmExtendD = 0;
+    public static final double kArmExtendMaxOutput = 0.8;
+    public static final double kArmExtendMinOutput = -0.4;
 
     // Starting with estimated values from calculator
     public static final double kSArmVolts = 0.8; // Needs to be measured
@@ -98,11 +100,12 @@ public final class Constants
     // The offset of the arm from the horizontal in its neutral position,
     // measured from the horizontal
     public static final double kArmOffsetRads = 1;
+    public static final double kArmBumperPos = 20;
 
     // NEED TO FIND REAL NUMBERS!!! (Radians?)
-    public static final double kArmRestingPosition = 38;
-    public static final double kArmIntakePosition = 30;
+    public static final double kArmRestingPosition = 25;
+    public static final double kArmIntakePosition = 0;
     public static final double kArmSpeakerPosition = 45;
-    public static final double kArmAmpPosition = 70;
+    public static final double kArmAmpPosition = 90;
   }
 }

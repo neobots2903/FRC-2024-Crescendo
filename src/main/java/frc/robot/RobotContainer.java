@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -98,31 +100,50 @@ public class RobotContainer
     operatorXbox.b().onTrue(new InstantCommand(() -> m_intakeShooter.startIntake(IntakeDirection.IN, IntakeShooterConstants.kIntakeSpeed)))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopIntake()));
 
-      operatorXbox.x().onTrue(new InstantCommand(() -> m_intakeShooter.startIntake(IntakeDirection.OUT, IntakeShooterConstants.kIntakeSpeed)))
+    operatorXbox.x().onTrue(new InstantCommand(() -> m_intakeShooter.startIntake(IntakeDirection.OUT, IntakeShooterConstants.kIntakeSpeed)))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopIntake()));
 
     // Arm extension, right up, left down.
-    operatorXbox.rightBumper().onTrue(new InstantCommand(() -> m_armSimple.extendArm()));
-    // operatorXbox.leftBumper().onTrue(new InstantCommand(() -> m_arm.retractArm()));
+    operatorXbox.rightTrigger().onTrue(new InstantCommand(() -> m_armSimple.extendArm()));
+    operatorXbox.leftTrigger().onTrue(new InstantCommand(() -> {
+      if (m_armSimple.isArmAboveBumpers()) {
+        m_armSimple.retractArm();
+      }
+    }));
 
     // Disable the arm controller when Left is pressed.
-    // operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));
     operatorXbox.povLeft().onTrue(Commands.runOnce(() -> {m_armSimple.disableArm();}));
+
+    WaitUntilCommand waitForArmExtended = new WaitUntilCommand(m_armSimple::isExtended);
+    WaitUntilCommand waitForArmRetracted = new WaitUntilCommand(m_armSimple::isRetracted);
+
+    operatorXbox.leftBumper().onTrue(
+      Commands.runOnce(
+          () -> m_armSimple.goToPosition(ArmConstants.kArmRestingPosition), m_armSimple)
+            .andThen(new WaitUntilCommand(m_armSimple::isArmAboveBumpers))
+            .andThen(new InstantCommand(() -> {
+              m_armSimple.extendArm();
+            })).andThen(waitForArmExtended)
+            .andThen(new InstantCommand(() -> {
+              m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
+            })));
+
+    operatorXbox.rightBumper().onTrue(
+      Commands.runOnce(
+          () -> m_armSimple.goToPosition(ArmConstants.kArmRestingPosition), m_armSimple)
+            .andThen(new WaitUntilCommand(m_armSimple::isArmAboveBumpers))
+            .andThen(new InstantCommand(() -> {
+              m_armSimple.retractArm();
+            })).andThen(waitForArmRetracted)
+            .andThen(new InstantCommand(() -> {
+              m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
+            })));
 
     // Arm Intake position when Down is pressed.
     operatorXbox.povDown().onTrue(
       Commands.runOnce(
           () -> {
-            // If the arm is extended, set the goal to the intake position, don't kill swerve.
-            if (m_armSimple.isExtended()) {
-              // m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
-              // m_arm.enable();
-              m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
-            } else {
-              // m_arm.setGoal(Constants.ArmConstants.kArmRestingPosition);
-              // m_arm.enable();
-              m_armSimple.goToPosition(ArmConstants.kArmRestingPosition);
-            }
+            m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
           },
           m_armSimple));
 
@@ -130,8 +151,6 @@ public class RobotContainer
     operatorXbox.povRight().onTrue(
       Commands.runOnce(
           () -> {
-            // m_arm.setGoal(Constants.ArmConstants.kArmAmpPosition);
-            // m_arm.enable();
             m_armSimple.goToPosition(ArmConstants.kArmSpeakerPosition);
           },
           m_armSimple));
@@ -140,26 +159,9 @@ public class RobotContainer
     operatorXbox.povUp().onTrue(
       Commands.runOnce(
           () -> {
-            // m_arm.setGoal(Constants.ArmConstants.kArmSpeakerPosition);
-            // m_arm.enable();
             m_armSimple.goToPosition(ArmConstants.kArmAmpPosition);
           },
           m_armSimple));
-
-    // // ADDED CODE FOR JUST P LOOP TESTING
-    // operatorXbox.rightBumper().onTrue(
-    //   Commands.runOnce(
-    //       () -> {
-    //         m_armSimple.goToPosition(ArmConstants.kArmSpeakerPosition);
-    //       },
-    //       m_armSimple));
-
-    // operatorXbox.leftBumper().onTrue(
-    //   Commands.runOnce(
-    //       () -> {
-    //         m_armSimple.disableArm();
-    //       },
-    //       m_armSimple));
     // --------------------------------------------------
   }
 
