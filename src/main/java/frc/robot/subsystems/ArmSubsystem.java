@@ -65,6 +65,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     }
     m_armMotor.setVoltage(output + feedforward);
 
+    // Right place for this???
     if (getLimitSwitch()) {
       m_armMotor.stopMotor();
       is_extended = true;
