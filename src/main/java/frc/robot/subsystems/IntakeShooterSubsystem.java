@@ -1,8 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -20,7 +17,7 @@ public class IntakeShooterSubsystem extends SubsystemBase {
   }
 
   public IntakeShooterSubsystem() {
-    // m_shooter.setInverted(true);
+    m_shooter.setInverted(false);
     // m_intake.setInverted(false);
     m_intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_shooter.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -69,7 +66,7 @@ public class IntakeShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter Speed", m_shooter.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Shooter Speed", getShooterSpeed());
     SmartDashboard.putNumber("Intake Speed", Math.abs(m_intake.getEncoder().getVelocity()));
   }
 }

@@ -45,28 +45,39 @@ public final class Constants
 
   public static class IntakeShooterConstants
   {
-    public static final int kShooterMotorPort = 10;
+    public static final int kShooterMotorPort = 13;
     public static final double kShooterSpeed  = 0.75;
-    public static final int kShooterRPM = 5000;
+    public static final int kShooterRPM = 3000;
 
     public static final int kIntakeMotorPort     = 11;
-    public static final double kIntakeSpeed      = 0.85;
+    public static final double kIntakeSpeed      = 0.75;
     public static final double kIntakeShootSpeed = 1;
   }
 
   public static class ArmConstants
   {
-    public static final int kArmMotorPort = 12;
+    public static final int kArmMotorPort = 10;
+    public static final int kArmExtendMotorPort = 12;
 
     public static final int kArmStopLimitPort = 0;
+
+    // Rotations???
+    public static final int kArmExtendPos = 36;
+    public static final int kArmRetractPos = 5;
 
     // Double check these first!
     public static final double kArmP = 6;
     public static final double kArmI = 0.5;
     public static final double kArmD = 0.75;
 
+    public static final double kArmExtendP = 0.05;
+    public static final double kArmExtendI = 0;
+    public static final double kArmExtendD = 0;
+    public static final double kArmExtendMinOutput = -1;
+    public static final double kArmExtendMaxOutput = 1;
+
     // Starting with estimated values from calculator
-    public static final double kSArmVolts = 1; // ???
+    public static final double kSArmVolts = 1.1; // 1 - 
     public static final double kGArmVolts = 0.72;
     public static final double kVArmVoltSecondPerRad = 5.85;
     public static final double kAArmVoltSecondSquaredPerRad = 0.11;
@@ -75,16 +86,19 @@ public final class Constants
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
 
     public static final int kArmEncoderPort = 1;
-    public static final int kArmEncoderPPR = 256;
+    public static final int kArmEncoderPPR = 72; // or 256 
     public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / kArmEncoderPPR;
+
+    public static final double convertRadians = Math.PI/180;
 
     // The offset of the arm from the horizontal in its neutral position,
     // measured from the horizontal
-    public static final double kArmOffsetRads = 5;
+    public static final double kArmOffsetRads = 0; // -39
 
-    // NEED TO FIND REAL NUMBERS!!! (Radians?)
-    public static final double kArmIntakePosition = kArmOffsetRads;
-    public static final double kArmAmpPosition = 40;
-    public static final double kArmSpeakerPosition = 90;
+    // NEED TO FIND REAL NUMBERS!!! (Degrees?)
+    public static final double kArmRestingPosition = 38 * convertRadians;
+    public static final double kArmIntakePosition = 30 * convertRadians;
+    public static final double kArmSpeakerPosition = 55 * convertRadians;
+    public static final double kArmAmpPosition = 80 * convertRadians;
   }
 }
