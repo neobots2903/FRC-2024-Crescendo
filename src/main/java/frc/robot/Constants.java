@@ -66,11 +66,16 @@ public final class Constants
     public static final int kArmRetractPos = 5;
 
     // Double check these first!
-    public static final double kArmP = 6;
-    public static final double kArmI = 0.5;
-    public static final double kArmD = 0.75;
+    // public static final double kArmP = 6;
+    // public static final double kArmI = 0.5;
+    // public static final double kArmD = 0.75;
+    public static final double kArmP = 0.05;
+    public static final double kArmI = 0;
+    public static final double kArmD = 0;
+    public static final double kArmMaxOutput = 0.5;
+    public static final double kArmMinOutput = -0.5;
 
-    public static final double kArmExtendP = 0.05;
+    public static final double kArmExtendP = 0.005;
     public static final double kArmExtendI = 0;
     public static final double kArmExtendD = 0;
 
@@ -88,6 +93,7 @@ public final class Constants
     // Is this supposed to be before or after the encoder?
     // 300:1 before encoder, 5:1 after encoder
     public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / 300;
+    public static final double kArmConversionFactor = 1.19;
 
     // The offset of the arm from the horizontal in its neutral position,
     // measured from the horizontal
@@ -96,7 +102,7 @@ public final class Constants
     // NEED TO FIND REAL NUMBERS!!! (Radians?)
     public static final double kArmRestingPosition = 38;
     public static final double kArmIntakePosition = 30;
-    public static final double kArmSpeakerPosition = 50;
-    public static final double kArmAmpPosition = 85;
+    public static final double kArmSpeakerPosition = 45;
+    public static final double kArmAmpPosition = 70;
   }
 }

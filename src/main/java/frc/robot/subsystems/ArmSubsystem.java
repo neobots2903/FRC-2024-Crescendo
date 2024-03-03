@@ -89,6 +89,11 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     SmartDashboard.putNumber("Arm Velocity", m_armEncoder.getFrequency());
     SmartDashboard.putBoolean("Arm Extended", is_extended);
     SmartDashboard.putBoolean("Arm Limit", getLimitSwitch());
+
+    if (getLimitSwitch()) {
+      m_armMotor.stopMotor();
+      return;
+    }
   }
 
   public Boolean isExtended() {

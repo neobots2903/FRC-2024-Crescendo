@@ -18,7 +18,7 @@ public class IntakeShooterSubsystem extends SubsystemBase {
 
   public IntakeShooterSubsystem() {
     m_shooter.setInverted(false);
-    // m_intake.setInverted(false);
+    m_intake.setInverted(true);
     m_intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_shooter.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
