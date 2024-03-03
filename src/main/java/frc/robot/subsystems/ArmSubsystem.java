@@ -66,6 +66,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     m_armMotor.setVoltage(output + feedforward);
 
     // Right place for this???
+    // Should be more robust to stop from getting stuck
     if (getLimitSwitch()) {
       m_armMotor.stopMotor();
       is_extended = true;
@@ -75,6 +76,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
   public void periodic() {
     SmartDashboard.putNumber("Arm Angle", getMeasurement());
+    SmartDashboard.putNumber("Arm Abs Pos", m_armEncoder.getAbsolutePosition());
     SmartDashboard.putNumber("Arm Setpoint", getController().getSetpoint().position);
     SmartDashboard.putNumber("Arm Error", getController().getPositionError());
     SmartDashboard.putNumber("Arm Velocity", m_armEncoder.getFrequency());
