@@ -90,7 +90,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
   public void periodic() {
     SmartDashboard.putNumber("Arm Angle", getMeasurement());
     SmartDashboard.putNumber("Arm Setpoint", getController().getSetpoint().position);
-    SmartDashboard.putNumber("Arm Error", getController().getPositionError());
+    SmartDashboard.putNumber("Arm Position", m_encoder.getAbsolutePosition());
     SmartDashboard.putBoolean("Arm Limit", !m_stopLimit.get());
 
     if (!m_stopLimit.get()) {

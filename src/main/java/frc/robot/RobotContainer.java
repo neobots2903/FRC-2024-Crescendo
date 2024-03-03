@@ -18,6 +18,7 @@ import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmTestSubsystem;
 
 import java.io.File;
 
@@ -34,7 +35,7 @@ public class RobotContainer
                                                                          "swerve"));
   private final IntakeShooterSubsystem m_intakeShooter = new IntakeShooterSubsystem();
 
-  private final ArmSubsystem m_arm = new ArmSubsystem();
+  private final ArmTestSubsystem m_arm = new ArmTestSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
@@ -95,46 +96,46 @@ public class RobotContainer
     operatorXbox.rightBumper().onTrue(new InstantCommand(() -> m_arm.extendArm()));
     operatorXbox.leftBumper().onTrue(new InstantCommand(() -> m_arm.retractArm()));
 
-    // // Disable the arm controller when Left is pressed.
-    // operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));
+    // Disable the arm controller when Left is pressed.
+    operatorXbox.povLeft().onTrue(Commands.runOnce(m_arm::disable));
 
-    // // Arm Intake position when Down is pressed.
-    // operatorXbox.povDown().onTrue(
-    //   Commands.runOnce(
-    //       () -> {
-    //         m_arm.disable();
-    //         // If the arm is extended, set the goal to the intake position, don't kill swerve.
-    //         if (m_arm.isExtended()) {
-    //           // m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
-    //           // m_arm.enable();
-    //           m_arm.setArmGoalCommand(Constants.ArmConstants.kArmIntakePosition);
-    //         } else {
-    //           // m_arm.setGoal(Constants.ArmConstants.kArmRestingPosition);
-    //           // m_arm.enable();
-    //           m_arm.setArmGoalCommand(Constants.ArmConstants.kArmRestingPosition);
-    //         }
-    //       },
-    //       m_arm));
+    // Arm Intake position when Down is pressed.
+    operatorXbox.povDown().onTrue(
+      Commands.runOnce(
+          () -> {
+            m_arm.disable();
+            // If the arm is extended, set the goal to the intake position, don't kill swerve.
+            if (m_arm.isExtended()) {
+              // m_arm.setGoal(Constants.ArmConstants.kArmIntakePosition);
+              // m_arm.enable();
+              m_arm.setArmGoalCommand(Constants.ArmConstants.kArmIntakePosition);
+            } else {
+              // m_arm.setGoal(Constants.ArmConstants.kArmRestingPosition);
+              // m_arm.enable();
+              m_arm.setArmGoalCommand(Constants.ArmConstants.kArmRestingPosition);
+            }
+          },
+          m_arm));
 
-    // // Arm Speaker position when Right is pressed.
-    // operatorXbox.povRight().onTrue(
-    //   Commands.runOnce(
-    //       () -> {
-    //         m_arm.disable();
-    //         m_arm.setGoal(Constants.ArmConstants.kArmAmpPosition);
-    //         m_arm.enable();
-    //       },
-    //       m_arm));
+    // Arm Speaker position when Right is pressed.
+    operatorXbox.povRight().onTrue(
+      Commands.runOnce(
+          () -> {
+            m_arm.disable();
+            m_arm.setGoal(Constants.ArmConstants.kArmAmpPosition);
+            m_arm.enable();
+          },
+          m_arm));
 
-    // // Arm Amp position when Up is pressed.
-    // operatorXbox.povUp().onTrue(
-    //   Commands.runOnce(
-    //       () -> {
-    //         m_arm.disable();
-    //         m_arm.setGoal(Constants.ArmConstants.kArmSpeakerPosition);
-    //         m_arm.enable();
-    //       },
-    //       m_arm));
+    // Arm Amp position when Up is pressed.
+    operatorXbox.povUp().onTrue(
+      Commands.runOnce(
+          () -> {
+            m_arm.disable();
+            m_arm.setGoal(Constants.ArmConstants.kArmSpeakerPosition);
+            m_arm.enable();
+          },
+          m_arm));
     // --------------------------------------------------
   }
 

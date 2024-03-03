@@ -86,19 +86,19 @@ public final class Constants
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
 
     public static final int kArmEncoderPort = 1;
-    public static final int kArmEncoderPPR = 72; // or 256 
+    public static final int kArmEncoderPPR = 72; // 72 or 256  (65536)
     public static final double kArmEncoderDistancePerPulse = 2.0 * Math.PI / kArmEncoderPPR;
 
-    public static final double convertRadians = Math.PI/180;
+    // public static final double convertRadians = Math.PI/180;
 
     // The offset of the arm from the horizontal in its neutral position,
     // measured from the horizontal
-    public static final double kArmOffsetRads = 0; // -39
+    public static final double kArmOffsetRads = 1; // -39
 
     // NEED TO FIND REAL NUMBERS!!! (Degrees?)
-    public static final double kArmRestingPosition = 38 * convertRadians;
-    public static final double kArmIntakePosition = 30 * convertRadians;
-    public static final double kArmSpeakerPosition = 55 * convertRadians;
-    public static final double kArmAmpPosition = 80 * convertRadians;
+    public static final double kArmRestingPosition = 38;
+    public static final double kArmIntakePosition = 30;
+    public static final double kArmSpeakerPosition = 55;
+    public static final double kArmAmpPosition = 80;
   }
 }
