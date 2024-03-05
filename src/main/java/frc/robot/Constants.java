@@ -50,8 +50,8 @@ public final class Constants
   public static class IntakeShooterConstants
   {
     public static final int kShooterMotorPort = 13;
-    public static final double kShooterSpeed  = 0.75;
-    public static final int kShooterRPM = 3000;
+    public static final double kShooterSpeed  = 0.6;
+    public static final int kShooterRPM = 2500;
 
     public static final int kIntakeMotorPort = 11;
     public static final double kIntakeSpeed = 0.75;
@@ -71,20 +71,20 @@ public final class Constants
     public static final int kArmRetractPos = 0;
 
     // Arm Rotation PID
-    public static final double kArmP = 0.05;
+    public static final double kArmP = 0.1;
     public static final double kArmI = 0;
-    public static final double kArmD = 0;
-    public static final double kArmMaxOutput = 0.5;
-    public static final double kArmMinOutput = -0.1;
+    public static final double kArmD = 0.005;
+    public static final double kArmMaxOutput = 0.6;
+    public static final double kArmMinOutput = -0.2;
     public static final double kArmMaxVelocityRadPerSecond = 3;
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
 
     // Arm Extension PID
-    public static final double kArmExtendP = 0.01;
+    public static final double kArmExtendP = 0.015;
     public static final double kArmExtendI = 0;
     public static final double kArmExtendD = 0;
     public static final double kArmExtendMaxOutput = 0.8;
-    public static final double kArmExtendMinOutput = -0.4;
+    public static final double kArmExtendMinOutput = -0.8;
 
     // 300:1 before encoder, 5:1 after encoder
     public static final double kArmConversionFactor = 1.19;
@@ -93,9 +93,9 @@ public final class Constants
     public static final double kArmBumperPos = 20;
 
     // Arm positions degrees.
-    public static final double kArmRestingPosition = 25;
-    public static final double kArmIntakePosition = 0;
-    public static final double kArmSpeakerPosition = 45;
+    public static final double kArmRestingPosition = 0;
+    public static final double kArmIntakePosition = -5;
+    public static final double kArmSpeakerPosition = 5;
     public static final double kArmAmpPosition = 90;
   }
 }
