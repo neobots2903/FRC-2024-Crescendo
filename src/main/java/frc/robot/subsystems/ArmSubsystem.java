@@ -4,16 +4,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
  
 /*
@@ -21,9 +14,10 @@ import frc.robot.Constants.ArmConstants;
  * after encoder chain ratio 5:1
  */
 
-public class ArmSubsystem extends ProfiledPIDSubsystem {
+public class ArmSubsystem extends SubsystemBase {
   private final CANSparkMax m_armMotor;
-  private final DutyCycleEncoder m_armEncoder;
+  private final RelativeEncoder m_armEncoder;
+  private final SparkPIDController m_armPid;
 
   private final CANSparkMax m_armExtendMotor;
   private final RelativeEncoder m_armExtendEncoder;
@@ -31,77 +25,92 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
   // Normally open limit switch
   private final DigitalInput m_armStopLimit;
-  
-  private final ArmFeedforward m_feedForward;
 
+  // local variables
   private Boolean is_extended = false;
+  private Boolean lastSwitchState = false;
+  private double currentTarget = 0;
 
   /** Create a new ArmSubsystem. */
   public ArmSubsystem() {
-    super(
-        new ProfiledPIDController(
-            ArmConstants.kArmP,
-            ArmConstants.kArmI,
-            ArmConstants.kArmD,
-            new TrapezoidProfile.Constraints(
-                ArmConstants.kArmMaxVelocityRadPerSecond,
-                ArmConstants.kArmMaxAccelerationRadPerSecSquared)),
-        0);
-
     m_armMotor = new CANSparkMax(ArmConstants.kArmMotorPort, MotorType.kBrushless);
-    m_armEncoder = new DutyCycleEncoder(ArmConstants.kArmEncoderPort);
+    m_armEncoder = m_armMotor.getEncoder();
     m_armStopLimit = new DigitalInput(ArmConstants.kArmStopLimitPort);
+    m_armPid = m_armMotor.getPIDController();
+    m_armEncoder.setPosition(0);
 
     m_armExtendMotor = new CANSparkMax(ArmConstants.kArmExtendMotorPort, MotorType.kBrushless);
     m_armExtendEncoder = m_armExtendMotor.getEncoder();
     m_extendPid = m_armExtendMotor.getPIDController();
+    m_armExtendEncoder.setPosition(0);
 
-    m_feedForward = new ArmFeedforward(ArmConstants.kSArmVolts, ArmConstants.kGArmVolts,
-        ArmConstants.kVArmVoltSecondPerRad, ArmConstants.kAArmVoltSecondSquaredPerRad);
+    // Set pid coefficients
+    m_armPid.setP(ArmConstants.kArmP);
+    m_armPid.setI(ArmConstants.kArmI);
+    m_armPid.setD(ArmConstants.kArmD);
+    m_armPid.setOutputRange(ArmConstants.kArmMinOutput, ArmConstants.kArmMaxOutput);
 
-    m_armEncoder.setDistancePerRotation(ArmConstants.kArmEncoderDistancePerPulse);
+    m_extendPid.setP(ArmConstants.kArmExtendP);
+    m_extendPid.setI(ArmConstants.kArmExtendI);
+    m_extendPid.setD(ArmConstants.kArmExtendD);
+    m_extendPid.setOutputRange(ArmConstants.kArmExtendMinOutput, ArmConstants.kArmExtendMaxOutput);
 
-    // Start arm at rest in neutral position
-    // setGoal(ArmConstants.kArmOffsetRads);
-  }
-
-  @Override
-  public void useOutput(double output, TrapezoidProfile.State setpoint) {
-    // Calculate the feedforward from the sepoint
-    double feedforward = m_feedForward.calculate(setpoint.position, setpoint.velocity);
-
-    // m_armMotor.setVoltage(output + feedforward);
-    m_armMotor.setVoltage(0);
-
-    // Right place for this???
-    // Should be more robust to stop from getting stuck
-    if (getLimitSwitch()) {
-      m_armMotor.stopMotor();
-      return;
-    }
+    m_armEncoder.setPositionConversionFactor(ArmConstants.kArmConversionFactor);
   }
 
   public void periodic() {
-    SmartDashboard.putNumber("Arm Angle", getMeasurement());
-    SmartDashboard.putNumber("Arm Abs Pos", m_armEncoder.getAbsolutePosition());
-    SmartDashboard.putNumber("Arm Setpoint", getController().getSetpoint().position);
-    SmartDashboard.putNumber("Arm Error", getController().getPositionError());
-    SmartDashboard.putNumber("Arm Velocity", m_armEncoder.getFrequency());
+    SmartDashboard.putNumber("Arm Angle", m_armEncoder.getPosition());
     SmartDashboard.putBoolean("Arm Extended", is_extended);
     SmartDashboard.putBoolean("Arm Limit", getLimitSwitch());
+    SmartDashboard.putNumber("Arm Amps", m_armMotor.getOutputCurrent());
+    
+    SmartDashboard.putNumber("Arm Ext Amps", m_armExtendMotor.getOutputCurrent());
+    SmartDashboard.putBoolean("Above Bumpers", isArmAboveBumpers());
 
+    // Allow it to go down because the switch limits up only.
+    // MODIFY CODE, KINDA WORKS (have to tap down multiple times)
     if (getLimitSwitch()) {
+      if (lastSwitchState) {
+        return;
+      }
       m_armMotor.stopMotor();
+      m_armPid.setOutputRange(ArmConstants.kArmExtendMinOutput, 0);
+      lastSwitchState = true;
       return;
+    } else {
+      if (!lastSwitchState) {
+        return;
+      }
+      m_armPid.setOutputRange(ArmConstants.kArmMinOutput, ArmConstants.kArmMaxOutput);
+      lastSwitchState = false;
     }
   }
 
+  public void goToPosition(double position) {
+    currentTarget = position;
+    SmartDashboard.putNumber("Arm Target", currentTarget);
+    SmartDashboard.putNumber("Arm Target Converted", currentTarget * ArmConstants.kArmConversionFactor);
+    m_armPid.setReference(currentTarget, CANSparkMax.ControlType.kPosition);
+  }
+
   public Boolean isExtended() {
-    return is_extended;
+    return is_extended && m_armEncoder.getPosition() >= 5;
+  }
+
+  public Boolean isRetracted() {
+    return !is_extended && m_armEncoder.getPosition() <= 5;
+  }
+
+  public Boolean isArmAboveBumpers() {
+    return m_armEncoder.getPosition() >= ArmConstants.kArmBumperPos;
   }
 
   public Boolean getLimitSwitch() {
     return !m_armStopLimit.get();
+  }
+
+  public void disableArm() {
+    m_armPid.setReference(0, CANSparkMax.ControlType.kDutyCycle);
   }
 
   public void extendArm() {
@@ -114,10 +123,5 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     // Run arm extension motor to 0 inches.
     m_extendPid.setReference(ArmConstants.kArmRetractPos, CANSparkMax.ControlType.kPosition);
     is_extended = false;
-  }
-
-  @Override
-  public double getMeasurement() {
-    return m_armEncoder.getDistance() + ArmConstants.kArmOffsetRads;
   }
 }

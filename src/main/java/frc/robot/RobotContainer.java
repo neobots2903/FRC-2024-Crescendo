@@ -9,20 +9,17 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.IntakeShooterConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ArmSubsystemSimple;
 
 import java.io.File;
 
@@ -38,9 +35,7 @@ public class RobotContainer
   private final SwerveSubsystem m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve"));
   private final IntakeShooterSubsystem m_intakeShooter = new IntakeShooterSubsystem();
-
-  // private final ArmSubsystem m_arm = new ArmSubsystem();
-  private final ArmSubsystemSimple m_armSimple = new ArmSubsystemSimple();
+  private final ArmSubsystem m_armSimple = new ArmSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
@@ -80,16 +75,18 @@ public class RobotContainer
     driverXbox.a().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
     driverXbox.x().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
 
+    // Maybe add rotate to angle with dpad?
+
     // Drive slower when left bumper is pressed, faster when right bumper is pressed.
     driverXbox
         .leftBumper()
-        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = 0.25))
-        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = 0.625));
+        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MIN_SPEED))
+        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MID_SPEED));
 
     driverXbox
         .rightBumper()
-        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = 0.75))
-        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = 0.625));
+        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MAX_SPEED))
+        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MID_SPEED));
 
     // --------------------------------------------------
 

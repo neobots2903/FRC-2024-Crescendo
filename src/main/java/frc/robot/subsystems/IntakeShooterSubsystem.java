@@ -1,16 +1,16 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import frc.robot.Constants.IntakeShooterConstants;
 
 public class IntakeShooterSubsystem extends SubsystemBase {
   private final CANSparkMax m_shooter = new CANSparkMax(IntakeShooterConstants.kShooterMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_intake = new CANSparkMax(IntakeShooterConstants.kIntakeMotorPort, MotorType.kBrushless);
+  private final DigitalInput m_intakeLimit = new DigitalInput(IntakeShooterConstants.kIntakeLimitPort);
 
   public enum IntakeDirection {
     IN, OUT
@@ -63,10 +63,16 @@ public class IntakeShooterSubsystem extends SubsystemBase {
     return m_shooter.getEncoder().getVelocity();
   }
 
+  public boolean isIntakeLimitSwitchPressed() {
+    // Normally open or closed? Find out when it's installed.
+    return m_intakeLimit.get();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Shooter Speed", getShooterSpeed());
     SmartDashboard.putNumber("Intake Speed", Math.abs(m_intake.getEncoder().getVelocity()));
+    SmartDashboard.putBoolean("Note too Far", isIntakeLimitSwitchPressed());
   }
 }
