@@ -91,12 +91,18 @@ public class RobotContainer
     // --------------------------------------------------
 
     // --------- OPERATOR bindings ----------------------
+    
+    // Make a shoot command that spins to a certain RPM and then activates the intake. Then stops.
+
+    // Shoot holding Y.
     operatorXbox.y().onTrue(new InstantCommand(() -> m_intakeShooter.startShooter()))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopShooter()));
 
+    // Intake holding B.
     operatorXbox.b().onTrue(new InstantCommand(() -> m_intakeShooter.startIntake(IntakeDirection.IN, IntakeShooterConstants.kIntakeSpeed)))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopIntake()));
 
+    // Outtake holding X.
     operatorXbox.x().onTrue(new InstantCommand(() -> m_intakeShooter.startIntake(IntakeDirection.OUT, IntakeShooterConstants.kIntakeSpeed)))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopIntake()));
 
@@ -114,6 +120,7 @@ public class RobotContainer
     WaitUntilCommand waitForArmExtended = new WaitUntilCommand(m_armSimple::isExtended);
     WaitUntilCommand waitForArmRetracted = new WaitUntilCommand(m_armSimple::isRetracted);
 
+    // From rest (or anywhere) to intake position when LeftBumper is pressed.
     operatorXbox.leftBumper().onTrue(
       Commands.runOnce(
           () -> m_armSimple.goToPosition(ArmConstants.kArmRestingPosition), m_armSimple)
@@ -125,6 +132,7 @@ public class RobotContainer
               m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
             })));
 
+    // From anywhere to starting position when RightBumper is pressed.
     operatorXbox.rightBumper().onTrue(
       Commands.runOnce(
           () -> m_armSimple.goToPosition(ArmConstants.kArmRestingPosition), m_armSimple)
@@ -140,7 +148,11 @@ public class RobotContainer
     operatorXbox.povDown().onTrue(
       Commands.runOnce(
           () -> {
-            m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
+            if (m_armSimple.isExtended()) {
+              m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
+            } else {
+              m_armSimple.goToPosition(ArmConstants.kArmRestingPosition);
+            }
           },
           m_armSimple));
 
