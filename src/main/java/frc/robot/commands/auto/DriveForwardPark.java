@@ -1,6 +1,5 @@
 package frc.robot.commands.auto;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,7 +20,6 @@ public class DriveForwardPark extends Command
   {
     this.swerveSubsystem = swerveSubsystem;
     controller = new PIDController(1.0, 0.0, 0.0);
-    // controller.setTolerance(1);
     controller.setSetpoint(0.0);
     // each subsystem used by the command must be passed into the
     // addRequirements() method (which takes a vararg of Subsystem)
@@ -44,6 +42,10 @@ public class DriveForwardPark extends Command
   @Override
   public void execute()
   {
+    // Putting telemetry on Shuffleboard.
+    SmartDashboard.putNumber("Auto X Position", swerveSubsystem.getPose().getX());
+    SmartDashboard.putNumber("Auto Setpoint", controller.getSetpoint());
+
     // This line is getting the current position of the robot and setting the setpoint to 5 (units???)s
     double translationVal = controller.calculate(swerveSubsystem.getPose().getX(), 5.0);
 
