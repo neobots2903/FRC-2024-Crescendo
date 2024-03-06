@@ -102,8 +102,8 @@ public class RobotContainer
     // Drive slower when left bumper is pressed, faster when right bumper is pressed.
     driverXbox
         .leftBumper()
-        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = 0.01))
-        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = 14.5));
+        .onTrue(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSlowSpeedFeetPerSecond)))
+        .onFalse(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSpeedFeetPerSecond)));
 
     // --------------------------------------------------
 

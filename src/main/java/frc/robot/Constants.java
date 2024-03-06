@@ -31,7 +31,17 @@ public final class Constants
     public static final double WHEEL_LOCK_TIME = 10; // seconds
 
     public static final double kMaxSpeedMetersPerSecond = 3.0;
+
+    public static final double kMaxRobotSpeedFeetPerSecond = 14.5;
+    public static final double kMaxRobotSlowSpeedFeetPerSecond = 5.0;
   }
+
+  // CHANGES TO TEST:
+  /*
+   * 1. New drive method.
+   * 2. New rate limiter (3 m/s).
+   * 3. Slow button.
+   */
 
   public static class OperatorConstants
   {
