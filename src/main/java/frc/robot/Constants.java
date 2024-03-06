@@ -19,7 +19,7 @@ import swervelib.math.Matter;
 public final class Constants
 {
   public static final double LBS_TO_KG = 0.453592;
-  public static final double ROBOT_MASS = 60 * LBS_TO_KG; // 80lbs * kg per lb, orig: (148 - 20.3) * 0.453592;
+  public static final double ROBOT_MASS = 65 * LBS_TO_KG; // 80lbs * kg per lb, orig: (148 - 20.3) * 0.453592;
   public static final double INTAKE_MASS = 25 * LBS_TO_KG; // 20lbs * kg per lb
   public static final Matter INTAKE = new Matter(new Translation3d(Units.inchesToMeters(10), 0, Units.inchesToMeters(5)), INTAKE_MASS);
   public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(2)), ROBOT_MASS); // orig: 8
@@ -29,10 +29,6 @@ public final class Constants
   {
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
-
-    public static final double MIN_SPEED = 0.25;
-    public static final double MID_SPEED = 0.626;
-    public static final double MAX_SPEED = 1.0;
   }
 
   public static class OperatorConstants
@@ -74,8 +70,8 @@ public final class Constants
     public static final double kArmP = 0.1;
     public static final double kArmI = 0;
     public static final double kArmD = 0.005;
-    public static final double kArmMaxOutput = 0.6;
-    public static final double kArmMinOutput = -0.2;
+    public static final double kArmMaxOutput = 0.7;
+    public static final double kArmMinOutput = -0.25;
     public static final double kArmMaxVelocityRadPerSecond = 3;
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
 
@@ -95,7 +91,7 @@ public final class Constants
     // Arm positions degrees.
     public static final double kArmRestingPosition = 0;
     public static final double kArmIntakePosition = -5;
-    public static final double kArmSpeakerPosition = 5;
+    public static final double kArmSpeakerPosition = 10;
     public static final double kArmAmpPosition = 90;
   }
 }
