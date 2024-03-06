@@ -16,6 +16,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.IntakeShooterConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AbsoluteDriveAdv;
 import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
@@ -49,6 +50,29 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
 
+    AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(m_drivebase,
+                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
+                                                                                                OperatorConstants.LEFT_Y_DEADBAND),
+                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
+                                                                                                OperatorConstants.LEFT_X_DEADBAND),
+                                                                   () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
+                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
+                                                                   driverXbox.getHID()::getYButtonPressed,
+                                                                   driverXbox.getHID()::getAButtonPressed,
+                                                                   driverXbox.getHID()::getXButtonPressed,
+                                                                   driverXbox.getHID()::getBButtonPressed);
+
+    // Applies deadbands and inverts controls because joysticks
+    // are back-right positive while robot
+    // controls are front-left positive
+    // left stick controls translation
+    // right stick controls the desired angle NOT angular rotation
+    Command driveFieldOrientedDirectAngle = m_drivebase.driveCommand(
+        () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> driverXbox.getRightX(),
+        () -> driverXbox.getRightY());
+
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
     // controls are front-left positive
@@ -59,7 +83,7 @@ public class RobotContainer
         () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> -driverXbox.getRightX());
 
-    m_drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    m_drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
   }
 
   /**
@@ -72,21 +96,14 @@ public class RobotContainer
   private void configureBindings()
   {
     // ---------- DRIVER bindings -----------------------
-    driverXbox.a().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
-    driverXbox.x().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
-
-    // Maybe add rotate to angle with dpad?
+    driverXbox.back().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
+    driverXbox.rightBumper().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
 
     // Drive slower when left bumper is pressed, faster when right bumper is pressed.
     driverXbox
         .leftBumper()
-        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MIN_SPEED))
-        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MID_SPEED));
-
-    driverXbox
-        .rightBumper()
-        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MAX_SPEED))
-        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MID_SPEED));
+        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = 0.01))
+        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = 14.5));
 
     // --------------------------------------------------
 
