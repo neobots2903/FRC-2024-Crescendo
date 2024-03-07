@@ -30,10 +30,10 @@ public final class Constants
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
 
-    public static final double kMaxSpeedMetersPerSecond = 3.0;
+    public static final double kMaxSpeedMetersPerSecond = 9.0;
 
-    public static final double kMaxRobotSpeedFeetPerSecond = 14.5;
-    public static final double kMaxRobotSlowSpeedFeetPerSecond = 5.0;
+    public static final double kMaxRobotSpeedFeetPerSecond = 15;
+    public static final double kMaxRobotSlowSpeedFeetPerSecond = 5;
   }
 
   // CHANGES TO TEST:

@@ -96,10 +96,11 @@ public class RobotContainer
   private void configureBindings()
   {
     // ---------- DRIVER bindings -----------------------
-    driverXbox.back().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
-    driverXbox.rightBumper().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
+    driverXbox.a().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
+    driverXbox.x().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
 
-    // Drive slower when left bumper is pressed, faster when right bumper is pressed.
+    // Drive slower when left bumper is pressed
+    // MIGHT BE CAUSING ISSUES!!!
     driverXbox
         .leftBumper()
         .onTrue(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSlowSpeedFeetPerSecond)))
