@@ -48,6 +48,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_armPid.setP(ArmConstants.kArmP);
     m_armPid.setI(ArmConstants.kArmI);
     m_armPid.setD(ArmConstants.kArmD);
+    m_armPid.setFF(ArmConstants.kArmFF);
     m_armPid.setOutputRange(ArmConstants.kArmMinOutput, ArmConstants.kArmMaxOutput);
 
     m_extendPid.setP(ArmConstants.kArmExtendP);
@@ -123,5 +124,10 @@ public class ArmSubsystem extends SubsystemBase {
     // Run arm extension motor to 0 inches.
     m_extendPid.setReference(ArmConstants.kArmRetractPos, CANSparkMax.ControlType.kPosition);
     is_extended = false;
+  }
+
+  public void setCoastMode(boolean coast) {
+    m_armMotor.setIdleMode(coast ? CANSparkMax.IdleMode.kCoast : CANSparkMax.IdleMode.kBrake);
+    m_armExtendMotor.setIdleMode(coast ? CANSparkMax.IdleMode.kCoast : CANSparkMax.IdleMode.kBrake);
   }
 }

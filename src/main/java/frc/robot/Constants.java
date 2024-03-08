@@ -30,7 +30,7 @@ public final class Constants
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
 
-    public static final double kMaxSpeedMetersPerSecond = 9.0;
+    public static final double kMaxSpeedMetersPerSecond = 12.0;
 
     public static final double kMaxRobotSpeedFeetPerSecond = 15;
     public static final double kMaxRobotSlowSpeedFeetPerSecond = 5;
@@ -82,8 +82,9 @@ public final class Constants
     public static final double kArmP = 0.1;
     public static final double kArmI = 0;
     public static final double kArmD = 0.005;
-    public static final double kArmMaxOutput = 0.7;
-    public static final double kArmMinOutput = -0.25;
+    public static final double kArmFF = 0.001;
+    public static final double kArmMaxOutput = 0.8;
+    public static final double kArmMinOutput = -0.8;
     public static final double kArmMaxVelocityRadPerSecond = 3;
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
 
@@ -103,7 +104,7 @@ public final class Constants
     // Arm positions degrees.
     public static final double kArmRestingPosition = 0;
     public static final double kArmIntakePosition = -5;
-    public static final double kArmSpeakerPosition = 10;
+    public static final double kArmSpeakerPosition = 0;
     public static final double kArmAmpPosition = 90;
   }
 }

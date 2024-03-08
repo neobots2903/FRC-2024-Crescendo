@@ -84,15 +84,18 @@ public class RobotContainer
   private void configureBindings()
   {
     // ---------- DRIVER bindings -----------------------
-    driverXbox.a().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
+    driverXbox.back().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
     driverXbox.x().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
+    
+    driverXbox.b().onTrue(new InstantCommand(() -> m_armSimple.setCoastMode(true), m_armSimple))
+                  .onFalse(new InstantCommand(() -> m_armSimple.setCoastMode(false), m_armSimple));
 
     // Drive slower when left bumper is pressed
-    // MIGHT BE CAUSING ISSUES!!!
-    // driverXbox
-    //     .leftBumper()
-    //     .onTrue(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSlowSpeedFeetPerSecond)))
-    //     .onFalse(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSpeedFeetPerSecond)));
+    // pressing once causes slow to become default, then must be held to make fast...
+    driverXbox
+        .leftBumper()
+        .whileTrue(new InstantCommand(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSpeedFeetPerSecond)))
+        .whileFalse(new InstantCommand(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSlowSpeedFeetPerSecond)));
 
     // --------------------------------------------------
 
