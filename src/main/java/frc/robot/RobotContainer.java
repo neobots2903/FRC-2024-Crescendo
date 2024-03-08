@@ -50,28 +50,16 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
 
-    AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(m_drivebase,
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                                OperatorConstants.LEFT_Y_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                                OperatorConstants.LEFT_X_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
-                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
-                                                                   driverXbox.getHID()::getYButtonPressed,
-                                                                   driverXbox.getHID()::getAButtonPressed,
-                                                                   driverXbox.getHID()::getXButtonPressed,
-                                                                   driverXbox.getHID()::getBButtonPressed);
-
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
     // controls are front-left positive
     // left stick controls translation
     // right stick controls the desired angle NOT angular rotation
     Command driveFieldOrientedDirectAngle = m_drivebase.driveCommand(
-        () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> driverXbox.getRightX(),
-        () -> driverXbox.getRightY());
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -driverXbox.getRightX(),
+        () -> -driverXbox.getRightY());
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -101,10 +89,10 @@ public class RobotContainer
 
     // Drive slower when left bumper is pressed
     // MIGHT BE CAUSING ISSUES!!!
-    driverXbox
-        .leftBumper()
-        .onTrue(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSlowSpeedFeetPerSecond)))
-        .onFalse(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSpeedFeetPerSecond)));
+    // driverXbox
+    //     .leftBumper()
+    //     .onTrue(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSlowSpeedFeetPerSecond)))
+    //     .onFalse(Commands.runOnce(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSpeedFeetPerSecond)));
 
     // --------------------------------------------------
 
