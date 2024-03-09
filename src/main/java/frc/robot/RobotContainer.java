@@ -16,6 +16,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.IntakeShooterConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AbsoluteDriveAdv;
 import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
@@ -53,13 +54,24 @@ public class RobotContainer
     // are back-right positive while robot
     // controls are front-left positive
     // left stick controls translation
+    // right stick controls the desired angle NOT angular rotation
+    Command driveFieldOrientedDirectAngle = m_drivebase.driveCommand(
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -driverXbox.getRightX(),
+        () -> -driverXbox.getRightY());
+
+    // Applies deadbands and inverts controls because joysticks
+    // are back-right positive while robot
+    // controls are front-left positive
+    // left stick controls translation
     // right stick controls the angular velocity of the robot
     Command driveFieldOrientedAnglularVelocity = m_drivebase.driveCommand(
         () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> -driverXbox.getRightX());
 
-    m_drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    m_drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
   }
 
   /**
@@ -72,31 +84,34 @@ public class RobotContainer
   private void configureBindings()
   {
     // ---------- DRIVER bindings -----------------------
-    driverXbox.a().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
+    driverXbox.back().onTrue((Commands.runOnce(m_drivebase::zeroGyro)));
     driverXbox.x().whileTrue(Commands.runOnce(m_drivebase::lock, m_drivebase).repeatedly());
+    
+    driverXbox.b().onTrue(new InstantCommand(() -> m_armSimple.setCoastMode(true), m_armSimple))
+                  .onFalse(new InstantCommand(() -> m_armSimple.setCoastMode(false), m_armSimple));
 
-    // Maybe add rotate to angle with dpad?
-
-    // Drive slower when left bumper is pressed, faster when right bumper is pressed.
+    // Drive slower when left bumper is pressed
+    // pressing once causes slow to become default, then must be held to make fast...
     driverXbox
         .leftBumper()
-        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MIN_SPEED))
-        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MID_SPEED));
-
-    driverXbox
-        .rightBumper()
-        .onTrue(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MAX_SPEED))
-        .onFalse(Commands.runOnce(() -> m_drivebase.maximumSpeed = DrivebaseConstants.MID_SPEED));
+        .whileTrue(new InstantCommand(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSpeedFeetPerSecond)))
+        .whileFalse(new InstantCommand(() -> m_drivebase.setMaxSpeed(DrivebaseConstants.kMaxRobotSlowSpeedFeetPerSecond)));
 
     // --------------------------------------------------
 
     // --------- OPERATOR bindings ----------------------
+    
+    // Make a shoot command that spins to a certain RPM and then activates the intake. Then stops.
+
+    // Shoot holding Y.
     operatorXbox.y().onTrue(new InstantCommand(() -> m_intakeShooter.startShooter()))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopShooter()));
 
+    // Intake holding B.
     operatorXbox.b().onTrue(new InstantCommand(() -> m_intakeShooter.startIntake(IntakeDirection.IN, IntakeShooterConstants.kIntakeSpeed)))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopIntake()));
 
+    // Outtake holding X.
     operatorXbox.x().onTrue(new InstantCommand(() -> m_intakeShooter.startIntake(IntakeDirection.OUT, IntakeShooterConstants.kIntakeSpeed)))
         .onFalse(new InstantCommand(() -> m_intakeShooter.stopIntake()));
 
@@ -114,6 +129,7 @@ public class RobotContainer
     WaitUntilCommand waitForArmExtended = new WaitUntilCommand(m_armSimple::isExtended);
     WaitUntilCommand waitForArmRetracted = new WaitUntilCommand(m_armSimple::isRetracted);
 
+    // From rest (or anywhere) to intake position when LeftBumper is pressed.
     operatorXbox.leftBumper().onTrue(
       Commands.runOnce(
           () -> m_armSimple.goToPosition(ArmConstants.kArmRestingPosition), m_armSimple)
@@ -125,6 +141,7 @@ public class RobotContainer
               m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
             })));
 
+    // From anywhere to starting position when RightBumper is pressed.
     operatorXbox.rightBumper().onTrue(
       Commands.runOnce(
           () -> m_armSimple.goToPosition(ArmConstants.kArmRestingPosition), m_armSimple)
@@ -140,7 +157,11 @@ public class RobotContainer
     operatorXbox.povDown().onTrue(
       Commands.runOnce(
           () -> {
-            m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
+            if (m_armSimple.isExtended()) {
+              m_armSimple.goToPosition(ArmConstants.kArmIntakePosition);
+            } else {
+              m_armSimple.goToPosition(ArmConstants.kArmRestingPosition);
+            }
           },
           m_armSimple));
 

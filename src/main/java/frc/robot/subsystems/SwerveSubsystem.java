@@ -15,6 +15,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.Constants.DrivebaseConstants;
+
 import java.io.File;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
@@ -35,9 +37,15 @@ public class SwerveSubsystem extends SubsystemBase
   private final SwerveDrive swerveDrive;
 
   /**
+   * Slew rate limiters for translational movement.
+   */
+  private SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(DrivebaseConstants.kMaxSpeedMetersPerSecond);
+  private SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(DrivebaseConstants.kMaxSpeedMetersPerSecond);
+
+  /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
-  public double maximumSpeed = Units.feetToMeters(14.5);
+  public double maximumSpeed = Units.feetToMeters(DrivebaseConstants.kMaxRobotSpeedFeetPerSecond);
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -77,6 +85,12 @@ public class SwerveSubsystem extends SubsystemBase
 
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+
+    // Add a slew rate limiter to the swerve drive to limit acceleration.
+    m_xSpeedLimiter = new SlewRateLimiter(DrivebaseConstants.kMaxSpeedMetersPerSecond);
+    m_ySpeedLimiter = new SlewRateLimiter(DrivebaseConstants.kMaxSpeedMetersPerSecond);
+
+    swerveDrive.swerveController.addSlewRateLimiters(m_xSpeedLimiter, m_ySpeedLimiter, null);
   }
 
   /**
@@ -235,6 +249,16 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void simulationPeriodic()
   {
+  }
+
+  /**
+   * Set max speed
+   * @return
+   */
+  public void setMaxSpeed(double maxSpeed)
+  {
+    maximumSpeed = maxSpeed;
+    swerveDrive.setMaximumSpeed(maxSpeed);
   }
 
   /**

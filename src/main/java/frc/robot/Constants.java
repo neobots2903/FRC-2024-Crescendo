@@ -19,7 +19,7 @@ import swervelib.math.Matter;
 public final class Constants
 {
   public static final double LBS_TO_KG = 0.453592;
-  public static final double ROBOT_MASS = 60 * LBS_TO_KG; // 80lbs * kg per lb, orig: (148 - 20.3) * 0.453592;
+  public static final double ROBOT_MASS = 65 * LBS_TO_KG; // 80lbs * kg per lb, orig: (148 - 20.3) * 0.453592;
   public static final double INTAKE_MASS = 25 * LBS_TO_KG; // 20lbs * kg per lb
   public static final Matter INTAKE = new Matter(new Translation3d(Units.inchesToMeters(10), 0, Units.inchesToMeters(5)), INTAKE_MASS);
   public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(2)), ROBOT_MASS); // orig: 8
@@ -30,10 +30,18 @@ public final class Constants
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
 
-    public static final double MIN_SPEED = 0.25;
-    public static final double MID_SPEED = 0.626;
-    public static final double MAX_SPEED = 1.0;
+    public static final double kMaxSpeedMetersPerSecond = 12.0;
+
+    public static final double kMaxRobotSpeedFeetPerSecond = 15;
+    public static final double kMaxRobotSlowSpeedFeetPerSecond = 5;
   }
+
+  // CHANGES TO TEST:
+  /*
+   * 1. New drive method.
+   * 2. New rate limiter (3 m/s).
+   * 3. Slow button.
+   */
 
   public static class OperatorConstants
   {
@@ -50,8 +58,8 @@ public final class Constants
   public static class IntakeShooterConstants
   {
     public static final int kShooterMotorPort = 13;
-    public static final double kShooterSpeed  = 0.75;
-    public static final int kShooterRPM = 3000;
+    public static final double kShooterSpeed  = 0.6;
+    public static final int kShooterRPM = 2500;
 
     public static final int kIntakeMotorPort = 11;
     public static final double kIntakeSpeed = 0.75;
@@ -71,20 +79,21 @@ public final class Constants
     public static final int kArmRetractPos = 0;
 
     // Arm Rotation PID
-    public static final double kArmP = 0.05;
+    public static final double kArmP = 0.1;
     public static final double kArmI = 0;
-    public static final double kArmD = 0;
-    public static final double kArmMaxOutput = 0.5;
-    public static final double kArmMinOutput = -0.1;
+    public static final double kArmD = 0.005;
+    public static final double kArmFF = 0.001;
+    public static final double kArmMaxOutput = 0.8;
+    public static final double kArmMinOutput = -0.8;
     public static final double kArmMaxVelocityRadPerSecond = 3;
     public static final double kArmMaxAccelerationRadPerSecSquared = 10;
 
     // Arm Extension PID
-    public static final double kArmExtendP = 0.01;
+    public static final double kArmExtendP = 0.015;
     public static final double kArmExtendI = 0;
     public static final double kArmExtendD = 0;
     public static final double kArmExtendMaxOutput = 0.8;
-    public static final double kArmExtendMinOutput = -0.4;
+    public static final double kArmExtendMinOutput = -0.8;
 
     // 300:1 before encoder, 5:1 after encoder
     public static final double kArmConversionFactor = 1.19;
@@ -93,9 +102,9 @@ public final class Constants
     public static final double kArmBumperPos = 20;
 
     // Arm positions degrees.
-    public static final double kArmRestingPosition = 25;
-    public static final double kArmIntakePosition = 0;
-    public static final double kArmSpeakerPosition = 45;
+    public static final double kArmRestingPosition = 0;
+    public static final double kArmIntakePosition = -5;
+    public static final double kArmSpeakerPosition = 0;
     public static final double kArmAmpPosition = 90;
   }
 }

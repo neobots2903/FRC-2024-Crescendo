@@ -65,7 +65,7 @@ public class IntakeShooterSubsystem extends SubsystemBase {
 
   public boolean isIntakeLimitSwitchPressed() {
     // Normally open or closed? Find out when it's installed.
-    return m_intakeLimit.get();
+    return !m_intakeLimit.get();
   }
 
   @Override
