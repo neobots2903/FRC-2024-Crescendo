@@ -9,7 +9,7 @@ import frc.robot.Constants.IntakeShooterConstants;
 
 public class IntakeShooterSubsystem extends SubsystemBase {
   private final CANSparkMax m_shooter = new CANSparkMax(IntakeShooterConstants.kShooterMotorPort, MotorType.kBrushless);
-  private final CANSparkMax m_intake = new CANSparkMax(IntakeShooterConstants.kIntakeMotorPort, MotorType.kBrushless);
+  private final CANSparkMax m_intake = new CANSparkMax(IntakeShooterConstants.kIntakeMotorPort, MotorType.kBrushed);
   private final DigitalInput m_intakeLimit = new DigitalInput(IntakeShooterConstants.kIntakeLimitPort);
 
   public enum IntakeDirection {
@@ -72,7 +72,7 @@ public class IntakeShooterSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Shooter Speed", getShooterSpeed());
-    SmartDashboard.putNumber("Intake Speed", Math.abs(m_intake.getEncoder().getVelocity()));
+    // SmartDashboard.putNumber("Intake Speed", Math.abs(m_intake.getEncoder().getVelocity()));
     SmartDashboard.putBoolean("Note too Far", isIntakeLimitSwitchPressed());
   }
 }

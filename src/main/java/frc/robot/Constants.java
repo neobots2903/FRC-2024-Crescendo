@@ -58,11 +58,11 @@ public final class Constants
   public static class IntakeShooterConstants
   {
     public static final int kShooterMotorPort = 13;
-    public static final double kShooterSpeed  = 0.6;
+    public static final double kShooterSpeed  = 0.5;
     public static final int kShooterRPM = 2500;
 
     public static final int kIntakeMotorPort = 11;
-    public static final double kIntakeSpeed = 0.75;
+    public static final double kIntakeSpeed = 0;
     public static final double kIntakeShootSpeed = 1;
     public static final int kIntakeLimitPort = 2; // FIND REAL VALUE
   }
@@ -104,7 +104,7 @@ public final class Constants
     // Arm positions degrees.
     public static final double kArmRestingPosition = 0;
     public static final double kArmIntakePosition = -5;
-    public static final double kArmSpeakerPosition = 0;
+    public static final double kArmSpeakerPosition = 10;
     public static final double kArmAmpPosition = 90;
   }
 }

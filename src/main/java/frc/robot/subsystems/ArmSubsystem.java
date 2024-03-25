@@ -94,6 +94,20 @@ public class ArmSubsystem extends SubsystemBase {
     m_armPid.setReference(currentTarget, CANSparkMax.ControlType.kPosition);
   }
 
+  public void decrementPosition() {
+    currentTarget -= 5;
+    m_armPid.setReference(currentTarget, CANSparkMax.ControlType.kPosition);
+  }
+
+  public void incrementPosition() {
+    currentTarget += 5;
+    m_armPid.setReference(currentTarget, CANSparkMax.ControlType.kPosition);   
+  }
+
+  public void zeroArmEncoder() {
+    m_armEncoder.setPosition(0);
+  }
+
   public Boolean isExtended() {
     return is_extended && m_armEncoder.getPosition() >= 5;
   }

@@ -16,7 +16,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.IntakeShooterConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AbsoluteDriveAdv;
+import frc.robot.commands.auto.DriveForwardPark;
 import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeShooterSubsystem.IntakeDirection;
@@ -123,6 +123,10 @@ public class RobotContainer
       }
     }));
 
+    operatorXbox.start().onTrue(new InstantCommand(() -> m_armSimple.incrementPosition()));
+    operatorXbox.back().onTrue(new InstantCommand(() -> m_armSimple.decrementPosition()));
+    operatorXbox.a().onTrue(new InstantCommand(() -> m_armSimple.zeroArmEncoder()));
+
     // Disable the arm controller when Left is pressed.
     operatorXbox.povLeft().onTrue(Commands.runOnce(() -> {m_armSimple.disableArm();}));
 
@@ -186,5 +190,11 @@ public class RobotContainer
   public void setMotorBrake(boolean brake)
   {
     m_drivebase.setMotorBrake(brake);
+  }
+
+  public Command getAutonomousCommand()
+  {
+    // An example command will be run in autonomous
+    return new DriveForwardPark(m_drivebase); // hard-coded for now
   }
 }
